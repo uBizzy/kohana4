@@ -24,7 +24,13 @@
  * an error status when something is found.
  */
 $root  = dirname(__DIR__);
-$paths = array_slice($argv, 1) ?: [$root.'/system', $root.'/modules', $root.'/extra', $root.'/application', $root.'/docker', $root.'/public'];
+$paths = array_slice($argv, 1) ?: [$root.'/system', $root.'/modules', $root.'/application', $root.'/docker', $root.'/public'];
+
+// The extra modules have a repository of their own: checked when they are there
+if (count($argv) === 1 AND is_dir($root.'/extra'))
+{
+	$paths[] = $root.'/extra';
+}
 $files = [];
 
 foreach ($paths as $path)
