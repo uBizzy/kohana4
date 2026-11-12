@@ -1,0 +1,29 @@
+/*
+ * Styles of the profiler tables. The colours are the variables of the theme.
+ */
+.kohana.k-debug { padding: 1em 1.2em; }
+.kohana table.profiler { width: 100%; margin: 0 0 1em; border-collapse: collapse; background: var(--k-surface); }
+.kohana table.profiler th,
+.kohana table.profiler td { padding: 0.25em 0.5em; border: solid var(--k-border); border-width: 1px 0; font-weight: normal; font-size: 1em; color: var(--k-text); vertical-align: top; text-align: right; }
+.kohana table.profiler th.name { text-align: left; }
+.kohana table.profiler tr.group th { font-size: 1.15em; font-weight: 600; }
+.kohana table.profiler tr.group th,
+.kohana table.profiler tr.group td { background: var(--k-bar); color: var(--k-bar-text); border-color: var(--k-bar); }
+.kohana table.profiler tr.group td.time { padding-bottom: 0; }
+.kohana table.profiler tr.headers th { font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.04em; background: var(--k-bg); color: var(--k-muted); }
+.kohana table.profiler tr.mark th.name { width: 40%; vertical-align: middle; overflow-wrap: anywhere; }
+.kohana table.profiler tr.mark td { padding: 0; }
+.kohana table.profiler tr.mark.final td { padding: 0.25em 0.5em; }
+.kohana table.profiler tr.mark td > div { position: relative; padding: 0.25em 0.5em; }
+.kohana table.profiler tr.mark td div.value { position: relative; z-index: 2; }
+.kohana table.profiler tr.mark td div.graph { position: absolute; top: 0; bottom: 0; right: 0; left: 100%; background: var(--k-chart-1); z-index: 1; }
+.kohana table.profiler tr.mark.memory td div.graph { background: var(--k-chart-4); }
+.kohana table.profiler tr.mark td.current { background: var(--k-cause); color: var(--k-cause-text); }
+.kohana table.profiler tr.mark td.min { background: var(--k-app); color: var(--k-app-text); }
+.kohana table.profiler tr.mark td.max { background: var(--k-error); color: var(--k-error-text); }
+.kohana table.profiler tr.mark td.average { background: var(--k-border); }
+.kohana table.profiler tr.mark td.total { background: var(--k-bar); color: var(--k-bar-text); }
+.kohana table.profiler tr.time td { border-bottom: 0; font-weight: 600; }
+.kohana table.profiler tr.memory td { border-top: 0; }
+.kohana table.profiler tr.final th.name { background: var(--k-bar); color: var(--k-bar-text); font-weight: 600; }
+.kohana table.profiler abbr { border: 0; text-decoration: none; color: var(--k-muted); font-weight: normal; }

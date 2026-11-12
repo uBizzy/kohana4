@@ -1,0 +1,3 @@
+- Pagination
+   - [Overview](index)
+   - [Settings and Views](config)

@@ -1,0 +1,5 @@
+- Migration
+   - [Overview](index)
+   - [Writing Migrations](writing)
+   - [Running Migrations](running)
+   - [Fresh Database and Seeds](seeds)

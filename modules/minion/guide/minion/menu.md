@@ -1,0 +1,5 @@
+- Minion
+   - [Overview](index)
+   - [Writing Tasks](tasks)
+   - [Input and Output](cli)
+   - [Checking the Installation](check)

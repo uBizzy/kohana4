@@ -1,0 +1,106 @@
+# Everything the checks and tests need: PHP with every extension, and the
+# database and cache servers. From the project root:
+#
+#   docker compose -f docker/compose.yml run --rm php docker/check.sh
+#   docker compose -f docker/compose.yml run --rm php vendor/bin/phpunit --filter Auth
+#   docker compose -f docker/compose.yml down
+#
+# The servers keep their data in memory: every start is a clean one.
+services:
+
+  php:
+    build: .
+    image: kohana-test:8.4
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      KOHANA_TEST_MYSQL_HOST: mariadb
+      KOHANA_TEST_MYSQL_USER: root
+      KOHANA_TEST_MYSQL_PASSWORD: test
+      KOHANA_TEST_MYSQL_DATABASE: kohana_test
+      KOHANA_TEST_PGSQL_HOST: postgres
+      KOHANA_TEST_PGSQL_PASSWORD: test
+      KOHANA_TEST_REDIS_HOST: redis
+      KOHANA_TEST_MEMCACHED_HOST: memcached
+      # For the tests of extra/ub_storage
+      UB_STORAGE_TEST_FTP_HOST: ftp
+      UB_STORAGE_TEST_FTP_USER: kohana
+      UB_STORAGE_TEST_FTP_PASSWORD: kohanatest
+      UB_STORAGE_TEST_S3_ENDPOINT: http://s3:7070
+      UB_STORAGE_TEST_S3_KEY: kohanatest
+      UB_STORAGE_TEST_S3_SECRET: kohanatestsecret
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      memcached:
+        condition: service_started
+      ftp:
+        condition: service_healthy
+      s3:
+        condition: service_started
+
+  mariadb:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: test
+      MARIADB_DATABASE: kohana_test
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: kohana_test
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  memcached:
+    image: memcached:1.6
+
+  # An FTP server with one user, for the storage tests
+  ftp:
+    image: stilliard/pure-ftpd
+    environment:
+      PUBLICHOST: ftp
+      FTP_USER_NAME: kohana
+      FTP_USER_PASS: kohanatest
+      FTP_USER_HOME: /home/ftpusers/kohana
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/21'"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  # A server that speaks the language of S3 and checks every signature
+  s3:
+    image: versity/versitygw
+    command: ["--port", ":7070", "posix", "/data"]
+    environment:
+      ROOT_ACCESS_KEY: kohanatest
+      ROOT_SECRET_KEY: kohanatestsecret
+    tmpfs:
+      - /data

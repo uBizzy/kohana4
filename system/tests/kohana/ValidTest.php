@@ -1,0 +1,1197 @@
+<?php
+
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+
+/**
+ * Tests the Valid class
+ *
+ * @package	Kohana
+ * @category   Tests
+ *
+ * @author     BRMatt <matthew@sigswitch.com>
+ * @copyright  (c) 2016-2026 Koseven Team
+ * @copyright  (c) since 2026 Konine Team
+ * @license	https://github.com/uBizzy/kohana4/blob/main/LICENSE.md
+ */
+#[Group('kohana')]
+#[Group('kohana.core')]
+#[Group('kohana.core.valid')]
+class Kohana_ValidTest extends Unittest_TestCase
+{
+
+	/**
+	 * Provides test data for test_alpha()
+	 * @return array
+	 */
+	public static function provider_alpha()
+	{
+		return [
+			['asdavafaiwnoabwiubafpowf', true],
+			['!aidhfawiodb', false],
+			['51535oniubawdawd78', false],
+			['!"£$(G$W£(HFW£F(HQ)"n', false],
+			// UTF-8 tests
+			['あいうえお', true, true],
+			['¥', false, true],
+			// Empty test
+			['', false, false],
+			[null, false, false],
+			[false, false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::alpha()
+	 *
+	 * Checks whether a string consists of alphabetical characters only.
+	 *
+	 * @param string  $string
+	 * @param boolean $expected
+	 */
+	#[DataProvider('provider_alpha')]
+	public function test_alpha($string, $expected, $utf8 = false)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::alpha($string, $utf8)
+		);
+	}
+
+	/*
+	 * Provides test data for test_alpha_numeric
+	 */
+	public static function provide_alpha_numeric()
+	{
+		return [
+			['abcd1234',  true],
+			['abcd',      true],
+			['1234',      true],
+			['abc123&^/-', false],
+			// UTF-8 tests
+			['あいうえお', true, true],
+			['零一二三四五', true, true],
+			['あい四五£^£^', false, true],
+			// Empty test
+			['', false, false],
+			[null, false, false],
+			[false, false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::alpha_numeric()
+	 *
+	 * Checks whether a string consists of alphabetical characters and numbers only.
+	 *
+	 * @param string  $input     The string to test
+	 * @param boolean $expected  Is $input valid
+	 */
+	#[DataProvider('provide_alpha_numeric')]
+	public function test_alpha_numeric($input, $expected, $utf8 = false)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::alpha_numeric($input, $utf8)
+		);
+	}
+
+	/**
+	 * Provides test data for test_alpha_dash
+	 */
+	public static function provider_alpha_dash()
+	{
+		return [
+			['abcdef',     true],
+			['12345',      true],
+			['abcd1234',   true],
+			['abcd1234-',  true],
+			['abc123&^/-', false],
+			// Empty test
+			['', false],
+			[null, false],
+			[false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::alpha_dash()
+	 *
+	 * Checks whether a string consists of alphabetical characters, numbers, underscores and dashes only.
+	 *
+	 * @param string  $input	      The string to test
+	 * @param boolean $contains_utf8  Does the string contain utf8 specific characters
+	 * @param boolean $expected       Is $input valid?
+	 */
+	#[DataProvider('provider_alpha_dash')]
+	public function test_alpha_dash($input, $expected, $contains_utf8 = false)
+	{
+		if ( ! $contains_utf8)
+		{
+			$this->assertSame(
+				$expected,
+				Valid::alpha_dash($input)
+			);
+		}
+
+		$this->assertSame(
+			$expected,
+			Valid::alpha_dash($input, true)
+		);
+	}
+
+	/**
+	 * DataProvider for the valid::date() test
+	 */
+	public static function provider_date()
+	{
+		return [
+			['now',true],
+			['10 September 2010',true],
+			['+1 day',true],
+			['+1 week',true],
+			['+1 week 2 days 4 hours 2 seconds',true],
+			['next Thursday',true],
+			['last Monday',true],
+
+			['blarg',false],
+			['in the year 2000',false],
+			['324824',false],
+			// Empty test
+			['', false],
+			[null, false],
+			[false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::date()
+	 *
+	 * @param string  $date  The date to validate
+	 * @param integer $expected
+	 */
+	#[DataProvider('provider_date')]
+	public function test_date($date, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::date($date, $expected)
+		);
+	}
+
+	/**
+	 * DataProvider for the valid::decimal() test
+	 */
+	public static function provider_decimal()
+	{
+		return [
+			// Empty test
+			['', 2, null, false],
+			[null, 2, null, false],
+			[false, 2, null, false],
+			['45.1664', 3, null, false],
+			['45.1664', 4, null, true],
+			['45.1664', 4, 2, true],
+			['-45.1664', 4, null, true],
+			['+45.1664', 4, null, true],
+			['-45.1664', 3, null, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::decimal()
+	 *
+	 * @param string  $decimal  The decimal to validate
+	 * @param integer $places   The number of places to check to
+	 * @param integer $digits   The number of digits preceding the point to check
+	 * @param boolean $expected Whether $decimal conforms to $places AND $digits
+	 */
+	#[DataProvider('provider_decimal')]
+	public function test_decimal($decimal, $places, $digits, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::decimal($decimal, $places, $digits),
+			'Decimal: "'.$decimal.'" to '.$places.' places and '.$digits.' digits (preceeding period)'
+		);
+	}
+
+	/**
+	 * Provides test data for test_digit
+	 * @return array
+	 */
+	public static function provider_digit()
+	{
+		return [
+			['12345',	true],
+			['10.5',     false],
+			['abcde',	false],
+			['abcd1234', false],
+			['-5',       false],
+			[-5,	     false],
+			// Empty test
+			['',	     false],
+			[null,       false],
+			[false,      false],
+		];
+	}
+
+	/**
+	 * Tests Valid::digit()
+	 *
+	 * @param mixed   $input     Input to validate
+	 * @param boolean $expected  Is $input valid
+	 */
+	#[DataProvider('provider_digit')]
+	public function test_digit($input, $expected, $contains_utf8 = false)
+	{
+		if ( ! $contains_utf8)
+		{
+			$this->assertSame(
+				$expected,
+				Valid::digit($input)
+			);
+		}
+
+		$this->assertSame(
+			$expected,
+			Valid::digit($input, true)
+		);
+
+	}
+
+	/**
+	 * DataProvider for the valid::color() test
+	 */
+	public static function provider_color()
+	{
+		return [
+			['#000000', true],
+			['#GGGGGG', false],
+			['#AbCdEf', true],
+			['#000', true],
+			['#abc', true],
+			['#DEF', true],
+			['000000', true],
+			['GGGGGG', false],
+			['AbCdEf', true],
+			['000', true],
+			['DEF', true],
+			// Empty test
+			['', false],
+			[null, false],
+			[false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::color()
+	 *
+	 * @param string  $color     The color to test
+	 * @param boolean $expected  Is $color valid
+	 */
+	#[DataProvider('provider_color')]
+	public function test_color($color, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::color($color)
+		);
+	}
+
+	/**
+	 * Provides test data for test_credit_card()
+	 */
+	public static function provider_credit_card()
+	{
+		return [
+			['4222222222222',	'visa',       true],
+			['4012888888881881', 'visa',       true],
+			['4012888888881881', null,	     true],
+			['4012888888881881', ['mastercard', 'visa'], true],
+			['4012888888881881', ['discover', 'mastercard'], false],
+			['4012888888881881', 'mastercard', false],
+			['5105105105105100', 'mastercard', true],
+			['6011111111111117', 'discover',   true],
+			['6011111111111117', 'visa',       false],
+			// Empty test
+			['', null, false],
+			[null, null, false],
+			[false, null, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::credit_card()
+	 *
+	 * @covers Valid::credit_card
+	 * @param string  $number   Credit card number
+	 * @param string  $type		Credit card type
+	 * @param boolean $expected
+	 */
+	#[DataProvider('provider_credit_card')]
+	public function test_credit_card($number, $type, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::credit_card($number, $type)
+		);
+	}
+
+	/**
+	 * Provides test data for test_credit_card()
+	 */
+	public static function provider_luhn()
+	{
+		return [
+			['4222222222222', true],
+			['4012888888881881', true],
+			['5105105105105100', true],
+			['6011111111111117', true],
+			['60111111111111.7', false],
+			['6011111111111117X', false],
+			['6011111111111117 ', false],
+			['WORD ', false],
+			// Empty test
+			['', false],
+			[null, false],
+			[false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::luhn()
+	 *
+	 * @covers Valid::luhn
+	 * @param string  $number   Credit card number
+	 * @param boolean $expected
+	 */
+	#[DataProvider('provider_luhn')]
+	public function test_luhn($number, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::luhn($number)
+		);
+	}
+
+	/**
+	 * Provides test data for test_email()
+	 *
+	 * @return array
+	 */
+	public static function provider_email()
+	{
+		return [
+			['foo', true,  false],
+			['foo', false, false],
+
+			['foo@bar', true, false],
+			// RFC is less strict than the normal regex, presumably to allow
+			//  admin@localhost, therefore we IGNORE IT!!!
+			['foo@bar', false, false],
+			['foo@bar.com', false, true],
+			['foo@barcom:80', false, false],
+			['foo@bar.sub.com', false, true],
+			['foo+asd@bar.sub.com', false, true],
+			['foo.asd@bar.sub.com', false, true],
+			// RFC says 254 length max #4011
+			[Text::random(null, 200).'@'.Text::random(null, 50).'.com', false, false]
+		];
+	}
+
+	/**
+	 * Tests Valid::email()
+	 *
+	 * Check an email address for correct format.
+	 *
+	 * @param string  $email   Address to check
+	 * @param boolean $strict  Use strict settings
+	 * @param boolean $correct Is $email address valid?
+	 */
+	#[DataProvider('provider_email')]
+	public function test_email($email, $strict, $correct)
+	{
+		$this->assertSame(
+			$correct,
+			Valid::email($email, $strict)
+		);
+	}
+
+	/**
+	 * Returns test data for test_email_domain()
+	 *
+	 * @return array
+	 */
+	public static function provider_email_domain()
+	{
+		return [
+			['google.com', true],
+			// Don't anybody dare register this...
+			['DAWOMAWIDAIWNDAIWNHDAWIHDAIWHDAIWOHDAIOHDAIWHD.com', false],
+			// Empty test
+			['', false],
+			[null, false],
+			[false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::email_domain()
+	 *
+	 * Validate the domain of an email address by checking if the domain has a
+	 * valid MX record.
+	 *
+	 * Test skips on windows
+	 *
+	 * @param string  $email   Email domain to check
+	 * @param boolean $correct Is it correct?
+	 */
+	#[DataProvider('provider_email_domain')]
+	public function test_email_domain($email, $correct)
+	{
+		if ( ! $this->hasInternet())
+		{
+			$this->markTestSkipped('An internet connection is required for this test');
+		}
+
+		$this->assertSame(
+			$correct,
+			Valid::email_domain($email)
+		);
+	}
+
+	/**
+	 * Provides data for test_exact_length()
+	 *
+	 * @return array
+	 */
+	public static function provider_exact_length()
+	{
+		return [
+			['somestring', 10, true],
+			['somestring', 11, false],
+			['anotherstring', 13, true],
+			// Empty test
+			['', 10, false],
+			[null, 10, false],
+			[false, 10, false],
+			// Test array of allowed lengths
+			['somestring', [1, 3, 5, 7, 9, 10], true],
+			['somestring', [1, 3, 5, 7, 9], false],
+		];
+	}
+
+	/**
+	 *
+	 * Tests Valid::exact_length()
+	 *
+	 * Checks that a field is exactly the right length.
+	 *
+	 * @param string  $string  The string to length check
+	 * @param integer $length  The length of the string
+	 * @param boolean $correct Is $length the actual length of the string?
+	 * @return bool
+	 */
+	#[DataProvider('provider_exact_length')]
+	public function test_exact_length($string, $length, $correct)
+	{
+		return $this->assertSame(
+			$correct,
+			Valid::exact_length($string, $length),
+			'Reported string length is not correct'
+		);
+	}
+
+	/**
+	 * Provides data for test_equals()
+	 *
+	 * @return array
+	 */
+	public static function provider_equals()
+	{
+		return [
+			['foo', 'foo', true],
+			['1', '1', true],
+			[1, '1', false],
+			['011', 011, false],
+			// Empty test
+			['', 123, false],
+			[null, 123, false],
+			[false, 123, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::equals()
+	 *
+	 * @param   string   $string	value to check
+	 * @param   integer  $required  required value
+	 * @param   boolean  $correct   is $string the same as $required?
+	 * @return  boolean
+	 */
+	#[DataProvider('provider_equals')]
+	public function test_equals($string, $required, $correct)
+	{
+		return $this->assertSame(
+			$correct,
+			Valid::equals($string, $required),
+			'Values are not equal'
+		);
+	}
+
+	/**
+	 * DataProvider for the valid::ip() test
+	 * @return array
+	 */
+	public static function provider_ip()
+	{
+		return [
+			['75.125.175.50',   false, true],
+			['127.0.0.1',       false, false],
+			['256.257.258.259', false, false],
+			['255.255.255.255', false, false],
+			['192.168.0.1',     false, false],
+			['192.168.0.1',     true,  true],
+			// Empty test
+			['', true, false],
+			[null, true, false],
+			[false, true, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::ip()
+	 *
+	 * @param string  $input_ip
+	 * @param boolean $allow_private
+	 * @param boolean $expected_result
+	 */
+	#[DataProvider('provider_ip')]
+	public function test_ip($input_ip, $allow_private, $expected_result)
+	{
+		$this->assertEquals(
+			$expected_result,
+			Valid::ip($input_ip, $allow_private)
+		);
+	}
+
+	/**
+	 * Returns test data for test_max_length()
+	 *
+	 * @return array
+	 */
+	public static function provider_max_length()
+	{
+		return [
+			// Border line
+			['some', 4, true],
+			// Exceeds
+			['KOHANARULLLES', 2, false],
+			// Under
+			['CakeSucks', 10, true],
+			// Empty test
+			['', -10, false],
+			[null, -10, false],
+			[false, -10, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::max_length()
+	 *
+	 * Checks that a field is short enough.
+	 *
+	 * @param string  $string	String to test
+	 * @param integer $maxlength Max length for this string
+	 * @param boolean $correct   Is $string <= $maxlength
+	 */
+	#[DataProvider('provider_max_length')]
+	public function test_max_length($string, $maxlength, $correct)
+	{
+	     $this->assertSame(
+			$correct,
+			Valid::max_length($string, $maxlength)
+		);
+	}
+
+	/**
+	 * Returns test data for test_min_length()
+	 *
+	 * @return array
+	 */
+	public static function provider_min_length()
+	{
+		return [
+			['This is obviously long enough', 10, true],
+			['This is not', 101, false],
+			['This is on the borderline', 25, true],
+			// Empty test
+			['', 10, false],
+			[null, 10, false],
+			[false, 10, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::min_length()
+	 *
+	 * Checks that a field is long enough.
+	 *
+	 * @param string  $string     String to compare
+	 * @param integer $minlength  The minimum allowed length
+	 * @param boolean $correct	Is $string 's length >= $minlength
+	 */
+	#[DataProvider('provider_min_length')]
+	public function test_min_length($string, $minlength, $correct)
+	{
+		$this->assertSame(
+			$correct,
+			Valid::min_length($string, $minlength)
+		);
+	}
+
+	/**
+	 * Returns test data for test_not_empty()
+	 *
+	 * @return array
+	 */
+	public static function provider_not_empty()
+	{
+		// Create a blank arrayObject
+		$ao = new ArrayObject;
+
+		// arrayObject with value
+		$ao1 = new ArrayObject;
+		$ao1['test'] = 'value';
+
+		return [
+			[[],      false],
+			[null,	     false],
+			['',	       false],
+			[$ao,	      false],
+			[$ao1,	     true],
+			[[null],  true],
+			[0,			true],
+			['0',	      true],
+			['Something',  true],
+		];
+	}
+
+	/**
+	 * Tests Valid::not_empty()
+	 *
+	 * Checks if a field is not empty.
+	 *
+	 * @param mixed   $value  Value to check
+	 * @param boolean $empty  Is the value really empty?
+	 */
+	#[DataProvider('provider_not_empty')]
+	public function test_not_empty($value, $empty)
+	{
+		return $this->assertSame(
+			$empty,
+			Valid::not_empty($value)
+		);
+	}
+
+	/**
+	 * DataProvider for the Valid::numeric() test
+	 */
+	public static function provider_numeric()
+	{
+		return [
+			[12345,   true],
+			[123.45,  true],
+			['12345', true],
+			['10.5',  true],
+			['-10.5', true],
+			['10.5a', false],
+			// @issue 3240
+			[.4,      true],
+			[-.4,     true],
+			[4.,      true],
+			[-4.,     true],
+			['.5',	true],
+			['-.5',   true],
+			['5.',	true],
+			['-5.',   true],
+			['.',     false],
+			['1.2.3', false],
+			// Empty test
+			['', false],
+			[null, false],
+			[false, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::numeric()
+	 *
+	 * @param string  $input     Input to test
+	 * @param boolean $expected  Whether or not $input is numeric
+	 */
+	#[DataProvider('provider_numeric')]
+	public function test_numeric($input, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::numeric($input)
+		);
+	}
+
+	/**
+	 * Provides test data for test_phone()
+	 * @return array
+	 */
+	public static function provider_phone()
+	{
+		return [
+			['0163634840',       null, true],
+			['+27173634840',     null, true],
+			['123578',	       null, false],
+			// Some uk numbers
+			['01234456778',      null, true],
+			['+0441234456778',   null, false],
+			// Google UK case you're interested
+			['+44 20-7031-2017', [12], true],
+			// BT Corporate
+			['020 7356 5000',      null, true],
+			// Empty test
+			['', null, false],
+			[null, null, false],
+			[false, null, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::phone()
+	 *
+	 * @param string  $phone     Phone number to test
+	 * @param boolean $expected  Is $phone valid
+	 */
+	#[DataProvider('provider_phone')]
+	public function test_phone($phone, $lengths, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::phone($phone, $lengths)
+		);
+	}
+
+	/**
+	 * DataProvider for the valid::regex() test
+	 */
+	public static function provider_regex()
+	{
+		return [
+			['hello world', '/[a-zA-Z\s]++/', true],
+			['123456789', '/[0-9]++/', true],
+			['£$%£%', '/[abc]/', false],
+			['Good evening',  '/hello/',  false],
+			// Empty test
+			['', '/hello/', false],
+			[null, '/hello/', false],
+			[false, '/hello/', false],
+		];
+	}
+
+	/**
+	 * Tests Valid::range()
+	 *
+	 * Tests if a number is within a range.
+	 *
+	 * @param string $value Value to test against
+	 * @param string $regex Valid pcre regular expression
+	 * @param bool $expected Does the value match the expression?
+	 */
+	#[DataProvider('provider_regex')]
+	public function test_regex($value, $regex, $expected)
+	{
+		$this->AssertSame(
+			$expected,
+			Valid::regex($value, $regex)
+		);
+	}
+
+	/**
+	 * DataProvider for the valid::range() test
+	 */
+	public static function provider_range()
+	{
+		return [
+			[1,  0,  2, null, true],
+			[-1, -5, 0, null, true],
+			[-1, 0,  1, null, false],
+			[1,  0,  0, null, false],
+			[2147483647, 0, 200000000000000, null, true],
+			[-2147483647, -2147483655, 2147483645, null, true],
+			// #4043
+			[2, 0, 10, 2, true],
+			[3, 0, 10, 2, false],
+			// #4672
+			[0, 0, 10, null, true],
+			[10, 0, 10, null, true],
+			[-10, -10, 10, null, true],
+			[-10, -1, 1, null, false],
+			[0, 0, 10, 2, true], // with $step
+			[10, 0, 10, 2, true],
+			[10, 0, 10, 3, false], // max outside $step
+			[12, 0, 12, 3, true],
+			// Empty test
+			['', 5, 10, null, false],
+			[null, 5, 10, null, false],
+			[false, 5, 10, null, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::range()
+	 *
+	 * Tests if a number is within a range.
+	 *
+	 * @param integer $number	Number to test
+	 * @param integer $min       Lower bound
+	 * @param integer $max       Upper bound
+	 * @param boolean $expected  Is Number within the bounds of $min && $max
+	 */
+	#[DataProvider('provider_range')]
+	public function test_range($number, $min, $max, $step, $expected)
+	{
+		$this->AssertSame(
+			$expected,
+			Valid::range($number, $min, $max, $step)
+		);
+	}
+
+	/**
+	 * Provides test data for test_url()
+	 *
+	 * @return array
+	 */
+	public static function provider_url()
+	{
+		$data = [
+			['http://google.com', true],
+			['http://google.com/', true],
+			['http://google.com/?q=abc', true],
+			['http://google.com/#hash', true],
+			['http://localhost', true],
+			['http://hello-world.pl', true],
+			['http://hello--world.pl', true],
+			['http://h.e.l.l.0.pl', true],
+			['http://server.tld/get/info', true],
+			['http://127.0.0.1', true],
+			['http://127.0.0.1:80', true],
+			['http://user@127.0.0.1', true],
+			['http://user:pass@127.0.0.1', true],
+			['ftp://my.server.com', true],
+			['rss+xml://rss.example.com', true],
+
+			['http://google.2com', false],
+			['http://google.com?q=abc', false],
+			['http://google.com#hash', false],
+			['http://hello-.pl', false],
+			['http://hel.-lo.world.pl', false],
+			['http://ww£.google.com', false],
+			['http://127.0.0.1234', false],
+			['http://127.0.0.1.1', false],
+			['http://user:@127.0.0.1', false],
+			["http://finalnewline.com\n", false],
+			// Empty test
+			['', false],
+			[null, false],
+			[false, false],
+		];
+
+		$data[] = ['http://'.str_repeat('123456789.', 25).'com/', true]; // 253 chars
+		$data[] = ['http://'.str_repeat('123456789.', 25).'info/', false]; // 254 chars
+
+		return $data;
+	}
+
+	/**
+	 * Tests Valid::url()
+	 *
+	 * @param string  $url       The url to test
+	 * @param boolean $expected  Is it valid?
+	 */
+	#[DataProvider('provider_url')]
+	public function test_url($url, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Valid::url($url)
+		);
+	}
+
+	/**
+	 * DataProvider for the valid::matches() test
+	 */
+	public static function provider_matches()
+	{
+		return [
+			[['a' => 'hello', 'b' => 'hello'], 'a', 'b', true],
+			[['a' => 'hello', 'b' => 'hello '], 'a', 'b', false],
+			[['a' => '1', 'b' => 1], 'a', 'b', false],
+			// Empty test
+			[['a' => '', 'b' => 'hello'], 'a', 'b', false],
+			[['a' => null, 'b' => 'hello'], 'a', 'b', false],
+			[['a' => false, 'b' => 'hello'], 'a', 'b', false],
+		];
+	}
+
+	/**
+	 * Tests Valid::matches()
+	 *
+	 * Tests if a field matches another from an array of data
+	 *
+	 * @param array   $data      Array of fields
+	 * @param integer $field     First field name
+	 * @param integer $match     Field name that must match $field in $data
+	 * @param boolean $expected  Do the two fields match?
+	 */
+	#[DataProvider('provider_matches')]
+	public function test_matches($data, $field, $match, $expected)
+	{
+		$this->AssertSame(
+			$expected,
+			Valid::matches($data, $field, $match)
+		);
+	}
+
+	/**
+	 * Returns test data for test_type()
+	 *
+	 * @return array
+	 */
+	public static function provider_type()
+	{
+		return [
+			['check me', ['string'], true],
+			[1, ['string'], false],
+			[null, ['string', 'null'], true],
+			[false, ['bool'], true],
+			['FALSE', ['bool'], false],
+			['2', ['int', 'numeric'], true],
+			[new ArrayObject(), ['countable'], true],
+		];
+	}
+
+	/**
+	 * Tests Valid::type()
+	 *
+	 * Checks type of field value.
+	 *
+	 * @param mixed $value Field value.
+	 * @param string[] $types Valid value types.
+	 * @param bool $correct	Is $value in $types.
+	 */
+	#[DataProvider('provider_type')]
+	public function test_type($value, $types, $correct)
+	{
+		$this->assertSame(
+			$correct,
+			Valid::type($value, ...$types)
+		);
+	}
+
+	/**
+	 * Returns test data for test_more()
+	 *
+	 * @return array
+	 */
+	public static function provider_more()
+	{
+		return [
+			[1, 2, false],
+			[2, 1, true],
+			[2, 1.9, true],
+			[2.1, 3, false],
+			[3.2, 3.3, false],
+			[3, 3, false],
+			[3.1, 3.1, false],
+		];
+	}
+
+	/**
+	 * Tests Valid::more()
+	 *
+	 * Tests if a field value more than minimum.
+	 *
+	 * @param float|int $value Field value.
+	 * @param float|int $min Minimum value.
+	 * @param bool $correct	Is $value more than $min.
+	 */
+	#[DataProvider('provider_more')]
+	public function test_more($value, $min, $correct)
+	{
+		$this->assertSame(
+			$correct,
+			Valid::more($value, $min)
+		);
+	}
+	/**
+	 * Returns test data for test_more_or_equal()
+	 *
+	 * @return array
+	 */
+	public static function provider_more_or_equal()
+	{
+		return [
+			[1, 2, false],
+			[2, 1, true],
+			[2, 1.9, true],
+			[2.1, 3, false],
+			[3.2, 3.3, false],
+			[3, 3, true],
+			[3.1, 3.1, true],
+		];
+	}
+
+	/**
+	 * Tests Valid::more_or_equal()
+	 *
+	 * Tests if a field value more or equal than minimum.
+	 *
+	 * @param float|int $value Field value.
+	 * @param float|int $min Minimum value.
+	 * @param bool $correct	Is $value more than $min.
+	 */
+	#[DataProvider('provider_more_or_equal')]
+	public function test_more_or_equal($value, $min, $correct)
+	{
+		$this->assertSame(
+			$correct,
+			Valid::more_or_equal($value, $min)
+		);
+	}
+
+	/**
+	 * Provides every text rule, with the extra arguments it needs.
+	 *
+	 * @return array of $rule, $extra_arguments
+	 */
+	public static function provider_text_rules()
+	{
+		return [
+			['regex', ['/^.*$/']], ['min_length', [0]], ['max_length', [100]], ['exact_length', [5]],
+			['email', []], ['email_domain', []], ['url', []], ['ip', []], ['credit_card', []],
+			['luhn', []], ['phone', []], ['date', []], ['alpha', []], ['alpha', [true]],
+			['alpha_numeric', []], ['alpha_numeric', [true]], ['alpha_dash', []], ['alpha_dash', [true]],
+			['digit', []], ['digit', [true]], ['numeric', []], ['range', [0, 10]], ['decimal', []],
+			['color', []], ['more', [-1]], ['more_or_equal', [0]], ['less', [10]], ['less_or_equal', [10]],
+		];
+	}
+
+	/**
+	 * User input can be an array (field[]=x), null, a boolean or an object.
+	 * None of those may ever pass a text or number rule, and none may raise
+	 * an error: the rule simply fails.
+	 */
+	#[DataProvider('provider_text_rules')]
+	public function test_text_rules_reject_non_text_input($rule, $arguments)
+	{
+		foreach ([['Array'], ['abc', '123'], [], null, true, false, new stdClass] as $input)
+		{
+			$this->assertFalse(
+				Valid::$rule($input, ...$arguments),
+				'Valid::'.$rule.' accepted '.gettype($input)
+			);
+		}
+	}
+
+	/**
+	 * The card prefix must match at the start of the number for every
+	 * alternative of the configured prefix, not only the first one.
+	 *
+	 * @covers Valid::credit_card
+	 */
+	public function test_credit_card_prefix_is_anchored_for_all_alternatives()
+	{
+		// 14 digits, passes Luhn, contains "55" but does not start with 36, 55 or 30x
+		$this->assertTrue(Valid::luhn('40000000000556'));
+		$this->assertFalse(Valid::credit_card('40000000000556', 'diners club'));
+	}
+
+	/**
+	 * @covers Valid::range
+	 */
+	public function test_range_supports_decimal_steps()
+	{
+		$this->assertTrue(Valid::range(1.5, 0, 2, 0.5));
+		$this->assertTrue(Valid::range('0.3', 0, 1, 0.1));
+		$this->assertFalse(Valid::range(1.25, 0, 2, 0.5));
+	}
+
+	/**
+	 * Provides values for the rules added in version 4.0.
+	 *
+	 * @return array of $rule, $arguments, $expected
+	 */
+	public static function provider_new_rules()
+	{
+		return [
+			['uuid', ['123e4567-e89b-12d3-a456-426614174000'], true],
+			['uuid', ['123E4567-E89B-12D3-A456-426614174000'], true],
+			['uuid', ['123e4567e89b12d3a456426614174000'], false],
+			['uuid', ["123e4567-e89b-12d3-a456-426614174000\n"], false],
+			['uuid', [null], false],
+			['json', ['{"a":[1,2]}'], true],
+			['json', ['5'], true],
+			['json', ['{a:1}'], false],
+			['json', [''], false],
+			['json', [['a' => 1]], false],
+			['boolean', [true], true],
+			['boolean', ['0'], true],
+			['boolean', ['false'], true],
+			['boolean', ['yes'], false],
+			['boolean', [2], false],
+			['boolean', [null], false],
+			['boolean', [[]], false],
+			['in', ['medium', ['small', 'medium']], true],
+			['in', [5, ['5', '6']], true],
+			['in', ['05', [5, 6]], false],
+			['in', ['large', ['small', 'medium']], false],
+			['in', [['small'], ['small', 'medium']], false],
+			['in', [null, ['']], false],
+			['date_format', ['2026-02-28', 'Y-m-d'], true],
+			['date_format', ['2026-02-30', 'Y-m-d'], false],
+			['date_format', ['28/02/2026', 'Y-m-d'], false],
+			['date_format', ['28/02/2026 14:05', 'd/m/Y H:i'], true],
+			['date_format', ['', 'Y-m-d'], false],
+			['date_format', [['2026-02-28'], 'Y-m-d'], false],
+		];
+	}
+
+	/**
+	 * @covers Valid::uuid
+	 * @covers Valid::json
+	 * @covers Valid::boolean
+	 * @covers Valid::in
+	 * @covers Valid::date_format
+	 */
+	#[DataProvider('provider_new_rules')]
+	public function test_new_rules($rule, array $arguments, $expected)
+	{
+		$this->assertSame($expected, Valid::$rule(...$arguments));
+	}
+
+	/**
+	 * The new rules work through Validation and have messages.
+	 */
+	public function test_new_rules_in_validation()
+	{
+		$validation = Validation::factory(['size' => 'huge', 'born' => '2026-13-01', 'id' => 'x'])
+			->rule('size', 'in', [':value', ['small', 'large']])
+			->rule('born', 'date_format', [':value', 'Y-m-d'])
+			->rule('id', 'uuid');
+
+		$this->assertFalse($validation->check());
+		$this->assertSame([
+			'size' => 'size must be one of the available options',
+			'born' => 'born must be a date in the format Y-m-d',
+			'id'   => 'id must be a UUID',
+		], $validation->errors('validation'));
+	}
+}

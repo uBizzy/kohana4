@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" width="760" font-family="system-ui, sans-serif" font-size="13" role="img" aria-label="The cascading filesystem: application first, then the modules, then the system">
+<rect width="760" height="400" fill="#f6f3ef"/>
+<defs>
+<marker id="cf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#646b70"/></marker>
+</defs>
+<g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12">
+
+<!-- The three levels, searched from top to bottom -->
+<text x="20" y="28" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#33383b">Searched in this order</text>
+
+<rect x="20" y="42" width="330" height="92" rx="6" fill="#fffdfa" stroke="#e3ddd5"/>
+<path d="M20 48a6 6 0 0 1 6-6h318a6 6 0 0 1 6 6v20H20z" fill="#bcd9ee"/>
+<text x="32" y="60" font-weight="bold" fill="#1f4257">1  application/</text>
+<text x="32" y="88" fill="#33383b">classes/Cookie.php</text>
+<text x="32" y="108" fill="#33383b">views/welcome.php</text>
+<text x="32" y="126" fill="#33383b">config/blog.php</text>
+
+<rect x="20" y="146" width="330" height="92" rx="6" fill="#fffdfa" stroke="#e3ddd5"/>
+<path d="M20 152a6 6 0 0 1 6-6h318a6 6 0 0 1 6 6v20H20z" fill="#cfe6c8"/>
+<text x="32" y="164" font-weight="bold" fill="#274a2b">2  modules/blog/</text>
+<text x="32" y="192" fill="#33383b">classes/Model/Post.php</text>
+<text x="32" y="212" fill="#8a9095" text-decoration="line-through">views/welcome.php</text>
+<text x="32" y="230" fill="#33383b">config/blog.php</text>
+
+<rect x="20" y="250" width="330" height="110" rx="6" fill="#fffdfa" stroke="#e3ddd5"/>
+<path d="M20 256a6 6 0 0 1 6-6h318a6 6 0 0 1 6 6v20H20z" fill="#f3d3ae"/>
+<text x="32" y="268" font-weight="bold" fill="#5c3a17">3  system/</text>
+<text x="32" y="296" fill="#8a9095" text-decoration="line-through">classes/Cookie.php</text>
+<text x="32" y="316" fill="#33383b">classes/Kohana/Cookie.php</text>
+<text x="32" y="336" fill="#33383b">views/kohana/error.php</text>
+
+<!-- From the levels to the result -->
+<path d="M360 88H400" stroke="#646b70" stroke-width="1.5" marker-end="url(#cf-arrow)"/>
+<path d="M360 192H400" stroke="#646b70" stroke-width="1.5" marker-end="url(#cf-arrow)"/>
+<path d="M360 305H400" stroke="#646b70" stroke-width="1.5" marker-end="url(#cf-arrow)"/>
+
+<!-- What the framework uses -->
+<text x="410" y="28" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#33383b">What the framework uses</text>
+<rect x="410" y="42" width="330" height="318" rx="6" fill="#fffdfa" stroke="#e3ddd5"/>
+<g>
+<rect x="422" y="58" width="306" height="26" rx="4" fill="#bcd9ee"/><text x="432" y="75" fill="#1f4257">classes/Cookie.php</text>
+<rect x="422" y="92" width="306" height="26" rx="4" fill="#f3d3ae"/><text x="432" y="109" fill="#5c3a17">classes/Kohana/Cookie.php</text>
+<rect x="422" y="126" width="306" height="26" rx="4" fill="#cfe6c8"/><text x="432" y="143" fill="#274a2b">classes/Model/Post.php</text>
+<rect x="422" y="160" width="306" height="26" rx="4" fill="#f3d3ae"/><text x="432" y="177" fill="#5c3a17">views/kohana/error.php</text>
+<rect x="422" y="194" width="306" height="26" rx="4" fill="#bcd9ee"/><text x="432" y="211" fill="#1f4257">views/welcome.php</text>
+<rect x="422" y="228" width="150" height="26" rx="4" fill="#bcd9ee"/><rect x="578" y="228" width="150" height="26" rx="4" fill="#cfe6c8"/><text x="432" y="245" fill="#1f4257">config/blog.php</text><text x="588" y="245" fill="#274a2b">+ config/blog.php</text>
+</g>
+</g>
+<g fill="#646b70" font-size="12">
+<text x="422" y="282">A file is taken from the first level that has it:</text>
+<text x="422" y="300">the crossed-out ones are replaced.</text>
+<text x="422" y="326">Config files are the exception: the values of</text>
+<text x="422" y="344">every level are merged, the first level wins.</text>
+<text x="20" y="384">The colour of a file shows the level it comes from.</text>
+</g>
+</svg>

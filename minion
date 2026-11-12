@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Runs a Minion task from the command line:
+ *
+ *     ./minion                       lists the tasks
+ *     ./minion {task} --help         explains a task
+ *     ./minion {task} [--option=value ...]
+ *
+ * Needs the minion module, enabled in application/bootstrap.php.
+ */
+include __DIR__.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'index.php';

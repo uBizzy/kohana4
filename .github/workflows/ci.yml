@@ -1,0 +1,90 @@
+# Checks every push and pull request, on each supported PHP version:
+# syntax, code style, types, class loading, static analysis and the tests.
+# The checks themselves are in docker/check.sh.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4', '8.5']
+
+    # Database and cache servers for the tests that need them
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: test
+          MARIADB_DATABASE: kohana_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: kohana_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+      memcached:
+        image: memcached:1.6
+        ports:
+          - 11211:11211
+
+    env:
+      KOHANA_TEST_MYSQL_HOST: 127.0.0.1
+      KOHANA_TEST_MYSQL_PORT: 3306
+      KOHANA_TEST_MYSQL_USER: root
+      KOHANA_TEST_MYSQL_PASSWORD: test
+      KOHANA_TEST_MYSQL_DATABASE: kohana_test
+      KOHANA_TEST_PGSQL_HOST: 127.0.0.1
+      KOHANA_TEST_PGSQL_PASSWORD: test
+      KOHANA_TEST_REDIS_HOST: 127.0.0.1
+      KOHANA_TEST_MEMCACHED_HOST: 127.0.0.1
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, gd, exif, imagick, mysqli, pdo_mysql, pdo_pgsql, pdo_sqlite, sodium, redis, apcu, memcached, zip, ftp
+          ini-values: apc.enable_cli=1, error_reporting=E_ALL
+          coverage: none
+
+      - name: Install the en_US locale used by the tests
+        run: |
+          sudo locale-gen en_US.UTF-8
+          sudo update-locale
+
+      - name: Install Composer packages
+        run: composer install --no-interaction --no-progress
+
+      # The same script runs on a developer's machine: see docker/check.sh
+      - name: Checks and tests
+        run: docker/check.sh

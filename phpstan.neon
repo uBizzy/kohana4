@@ -1,0 +1,85 @@
+# Static analysis of the framework. Run with:   vendor/bin/phpstan analyse
+#
+# The code is clean at this level: every finding is a new one and must be
+# fixed, there is no list of accepted findings (no "baseline"). The few
+# places where the analysis cannot follow the framework are listed, with
+# the reason, under "ignoreErrors" at the end of this file.
+
+parameters:
+	level: 10
+	phpVersion: 80400
+
+	paths:
+		- system/classes
+		- modules/auth/classes
+		- modules/cache/classes
+		- modules/codebench/classes
+		- modules/database/classes
+		- modules/encrypt/classes
+		- modules/image/classes
+		- modules/ko7
+		- modules/ko9
+		- modules/migration/classes
+		- modules/minion/classes
+		- modules/orm/classes
+		- modules/pagination/classes
+		- modules/unittest/classes
+		- modules/userguide/classes
+
+	excludePaths:
+		- */tests/*
+
+	# Defines the path constants (SYSPATH, APPPATH, ...) that index.php sets at run time
+	bootstrapFiles:
+		- phpstan-bootstrap.php
+
+	# Classes whose properties are not declared: a model has a property for
+	# every column of its table, a config group for every key of its file
+	universalObjectCratesClasses:
+		- ORM
+		- Kohana_ORM
+		- Config_Group
+		- Kohana_Config_Group
+
+	ignoreErrors:
+		# Kohana::$config is null until Kohana::init() has run, which is the
+		# first thing bootstrap.php does: no other code of the framework
+		# runs before it.
+		-
+			message: '#^Cannot call method \w+\(\) on Config\|null\.$#'
+
+		# Controller_Template::$template holds the name of the view file
+		# until before() has run, and the View itself from then on. The
+		# actions of a template controller only ever see the View.
+		-
+			message: '#^Cannot (access property \$\w+|call method \w+\(\)) on string\|View\.$#'
+			paths:
+				- system/classes/Kohana/Controller/Template.php
+				- modules/userguide/classes/Kohana/Controller/Userguide.php
+
+		# A class of the list can fail to load (a missing extension, for
+		# example); the analysis only knows classes that exist.
+		-
+			message: '#^Dead catch - Throwable is never thrown in the try block\.$#'
+			path: modules/userguide/classes/Kohana/Kodoc.php
+
+		# PHP gives false for bytes that are not UTF-8 and for numbers that
+		# are no characters (see the tests in FixesTest); the analysis
+		# believes mb_ord() and mb_chr() always succeed.
+		-
+			message: '#^Strict comparison using === between (int|string) and false will always evaluate to false\.$#'
+			path: system/classes/Kohana/UTF8.php
+
+		# session_start() only warns, but the framework turns every warning
+		# into an exception, so this catch is reached.
+		-
+			message: '#^Dead catch - Exception is never thrown in the try block\.$#'
+			path: system/classes/Kohana/Session/Native.php
+
+		# The classes of the framework come in pairs: Kohana_Request holds
+		# the code and the empty class Request extends it, so that an
+		# application can put its own Request in between. Code inside
+		# Kohana_Request that passes itself on is always an object of the
+		# class Request, which the analysis cannot know.
+		-
+			message: '#expects (\w+)(\|null)?, \$this\(Kohana_\1\) given\.$#'

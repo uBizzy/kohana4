@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+	Code style rules of the framework. Check with:   vendor/bin/phpcs
+	Fix what can be fixed automatically with:        vendor/bin/phpcbf
+-->
+<ruleset name="Kohana">
+	<description>Kohana code style</description>
+
+	<file>system/classes</file>
+	<file>system/config</file>
+	<file>system/messages</file>
+	<file>modules</file>
+	<file>application/bootstrap.php</file>
+	<file>public/index.php</file>
+
+	<!-- Third-party code, generated pages and modules that are not maintained yet -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/views/*</exclude-pattern>
+	<exclude-pattern>*/guide/*</exclude-pattern>
+	<exclude-pattern>*/tests/test_data/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="tab-width" value="4"/>
+	<arg value="sp"/>
+
+	<!-- Indent with tabs, never with spaces -->
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+
+	<!-- true, false and null are written in lowercase -->
+	<rule ref="Generic.PHP.LowerCaseConstant"/>
+
+	<!-- Unix line endings, no byte order mark -->
+	<rule ref="Generic.Files.LineEndings">
+		<properties>
+			<property name="eolChar" value="\n"/>
+		</properties>
+	</rule>
+	<rule ref="Generic.Files.ByteOrderMark"/>
+
+	<!-- Always the long PHP open tag -->
+	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+
+	<!-- No functions that PHP has deprecated or removed -->
+	<rule ref="Generic.PHP.DeprecatedFunctions"/>
+</ruleset>

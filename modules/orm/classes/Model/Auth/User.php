@@ -1,0 +1,213 @@
+<?php
+/**
+ * Default auth user
+ *
+ * @package    Kohana/Auth
+ *
+ * @copyright  (c) 2007-2016  Kohana Team
+ * @copyright  (c) 2016-2026 Koseven Team
+ * @copyright  (c) since 2026 Konine Team
+ * @license    https://github.com/uBizzy/kohana4/blob/main/LICENSE.md
+ *
+ * @property  int|string       $id
+ * @property  string           $username
+ * @property  string           $email
+ * @property  string           $password    hash of the password
+ * @property  int|string       $logins
+ * @property  int|string|null  $last_login
+ */
+class Model_Auth_User extends ORM {
+
+	/**
+	 * A user has many tokens and roles
+	 *
+	 * @var array<string, array<string, string|bool|null>> Relationhips
+	 */
+	protected array $_has_many = [
+		'user_tokens' => ['model' => 'User_Token'],
+		'roles'       => ['model' => 'Role', 'through' => 'roles_users'],
+	];
+
+	/**
+	 * Rules for the user model. Because the password is _always_ a hash
+	 * when it's set,you need to run an additional not_empty rule in your controller
+	 * to make sure you didn't hash an empty string. The password rules
+	 * should be enforced outside the model or with a model helper method.
+	 *
+	 * @return array<string, array<int, array<int, mixed>>> Rules
+	 */
+	public function rules(): array
+	{
+		return [
+			'username' => [
+				['not_empty'],
+				['max_length', [':value', 32]],
+				[[$this, 'unique'], ['username', ':value']],
+			],
+			'password' => [
+				['not_empty'],
+			],
+			'email' => [
+				['not_empty'],
+				['email'],
+				[[$this, 'unique'], ['email', ':value']],
+			],
+		];
+	}
+
+	/**
+	 * Filters to run when data is set in this model. The password filter
+	 * automatically hashes the password when it's set in the model.
+	 *
+	 * @return array<int|string, array<int, array<int, mixed>>> Filters
+	 */
+	public function filters(): array
+	{
+		return [
+			'password' => [
+				[[Auth::instance(), 'hash']]
+			]
+		];
+	}
+
+	/**
+	 * Labels for fields in this model
+	 *
+	 * @return array<string, string> Labels
+	 */
+	public function labels(): array
+	{
+		return [
+			'username'         => 'username',
+			'email'            => 'email address',
+			'password'         => 'password',
+		];
+	}
+
+	/**
+	 * Complete the login for a user by incrementing the logins and saving login timestamp
+	 *
+	 * @return void
+	 */
+	public function complete_login(): void
+	{
+		if ($this->_loaded)
+		{
+			// Update the number of logins
+			$this->logins = new Database_Expression('logins + 1');
+
+			// Set the last login date
+			$this->last_login = time();
+
+			// Save the user
+			$this->update();
+		}
+	}
+
+	/**
+	 * Tests if a unique key value exists in the database.
+	 *
+	 * @param   mixed  $value  the value to test
+	 * @param   ?string  $field  field name
+	 * @return  bool
+	 */
+	public function unique_key_exists(mixed $value, ?string $field = null): bool
+	{
+		if ($field === null)
+		{
+			// Automatically determine field by looking at the value
+			$field = $this->unique_key($value);
+		}
+
+		return (bool) DB::select([DB::expr('COUNT(*)'), 'total_count'])
+			->from($this->_table_name)
+			->where($field, '=', $value)
+			->where($this->_primary_key, '!=', $this->pk())
+			->execute($this->_db)
+			->get('total_count');
+	}
+
+	/**
+	 * Allows a model use both email and username as unique identifiers for login
+	 *
+	 * @param   mixed  $value  unique value
+	 * @return  string  field name
+	 */
+	public function unique_key(mixed $value): string
+	{
+		return Valid::email($value) ? 'email' : 'username';
+	}
+
+	/**
+	 * Password validation for plain passwords.
+	 *
+	 * @param array<string, mixed> $values
+	 * @return Validation
+	 */
+	public static function get_password_validation(array $values): Validation
+	{
+		return Validation::factory($values)
+			->rule('password', 'min_length', [':value', 8])
+			->rule('password_confirm', 'matches', [':validation', ':field', 'password']);
+	}
+
+	/**
+	 * Create a new user
+	 *
+	 * Example usage:
+	 * ~~~
+	 * $user = ORM::factory('User')->create_user($_POST, array(
+	 *	'username',
+	 *	'password',
+	 *	'email',
+	 * );
+	 * ~~~
+	 *
+	 * @param array<string, mixed> $values
+	 * @param array<int, string> $expected
+	 * @throws ORM_Validation_Exception
+	 */
+	public function create_user(array $values, array $expected): static
+	{
+		// Validation for passwords
+		$extra_validation = Model_User::get_password_validation($values)
+			->rule('password', 'not_empty');
+
+		return $this->values($values, $expected)->create($extra_validation);
+	}
+
+	/**
+	 * Update an existing user
+	 *
+	 * [!!] We make the assumption that if a user does not supply a password, that they do not wish to update their password.
+	 *
+	 * Example usage:
+	 * ~~~
+	 * $user = ORM::factory('User')
+	 *	->where('username', '=', 'kiall')
+	 *	->find()
+	 *	->update_user($_POST, array(
+	 *		'username',
+	 *		'password',
+	 *		'email',
+	 *	);
+	 * ~~~
+	 *
+	 * @param array<string, mixed> $values
+	 * @param array<int, string> $expected
+	 * @throws ORM_Validation_Exception
+	 */
+	public function update_user(array $values, ?array $expected = null): static
+	{
+		if (empty($values['password']))
+		{
+			unset($values['password'], $values['password_confirm']);
+		}
+
+		// Validation for passwords
+		$extra_validation = Model_User::get_password_validation($values);
+
+		return $this->values($values, $expected)->update($extra_validation);
+	}
+
+} // End Auth User Model

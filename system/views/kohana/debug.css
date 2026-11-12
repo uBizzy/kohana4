@@ -1,0 +1,97 @@
+/*
+ * Styles of everything the framework prints for the developer: the error
+ * page, the notices panel and the profiler. The colours are the
+ * variables of the theme (Theme::css(), config/theme.php), light or dark.
+ */
+.k-debug {
+	font: 14px/1.5 var(--k-font);
+	color: var(--k-text);
+	background: var(--k-bg);
+	color-scheme: var(--k-scheme);
+	text-align: left;
+}
+body.k-debug { margin: 0; }
+.k-debug *, .k-debug *::before, .k-debug *::after { box-sizing: border-box; }
+.k-debug code, .k-debug pre { font: 13px/1.45 var(--k-font-code); }
+.k-debug pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.k-debug a { color: var(--k-link); }
+.k-debug small { color: var(--k-muted); font-size: 0.85em; }
+
+/* Buttons that look like links: every part that opens and closes */
+.k-debug button {
+	font: inherit; color: var(--k-link); background: none; border: 0; padding: 0;
+	cursor: pointer; text-align: left; text-decoration: underline; text-underline-offset: 2px;
+}
+.k-debug button:hover { color: var(--k-text); }
+.k-debug button.k-button {
+	color: inherit; text-decoration: none; padding: 0.2em 0.8em; border-radius: var(--k-radius);
+	border: 1px solid var(--k-edge); background: var(--k-glass);
+}
+.k-debug button.k-button:hover { background: var(--k-glass); }
+
+/* The link that opens a file in the code editor */
+.k-debug a.k-open {
+	margin-left: 0.4em; padding: 0.05em 0.5em; font-size: 0.8em; text-decoration: none;
+	border-radius: 999px; border: 1px solid var(--k-edge); background: var(--k-glass); color: inherit;
+}
+.k-debug a.k-open:hover { background: var(--k-glass); }
+
+/* Parts that start closed. Without JavaScript everything stays visible. */
+.k-js .k-debug .k-collapsed { display: none; }
+
+/* Headers of an error and of its causes */
+.k-debug .k-head { padding: 1em 1.2em; background: var(--k-error); color: var(--k-error-text); }
+.k-debug .k-head.k-cause { background: var(--k-cause); color: var(--k-cause-text); }
+.k-debug .k-head h1, .k-debug .k-head h2 { margin: 0; font-size: 1.15em; font-weight: 600; overflow-wrap: anywhere; }
+.k-debug .k-head .k-type { font-weight: 400; opacity: 0.85; }
+.k-debug .k-head p { margin: 0.4em 0 0; }
+.k-debug .k-meta { display: flex; flex-wrap: wrap; gap: 0.4em 1.2em; align-items: center; font-size: 0.9em; }
+
+.k-debug .k-content { padding: 1em 1.2em 1.4em; }
+.k-debug .k-bar { margin: 0; padding: 0.6em 1.2em; font-size: 1em; font-weight: 600; background: var(--k-bar); color: var(--k-bar-text); }
+.k-debug .k-bar button { color: inherit; }
+.k-debug h3 { margin: 0.8em 0 0.3em; font-size: 1em; font-weight: 400; }
+.k-debug .k-note { color: var(--k-muted); font-style: italic; }
+
+/* Source code around a line */
+.k-debug pre.source {
+	margin: 0.4em 0 1em; padding: 0.5em 0; background: var(--k-surface);
+	border: 1px solid var(--k-border); border-radius: var(--k-radius); overflow: auto; white-space: pre;
+}
+.k-debug pre.source span.line { display: block; padding: 0 0.8em; }
+.k-debug pre.source span.highlight { background: var(--k-highlight); }
+.k-debug pre.source span.number { color: var(--k-muted); user-select: none; }
+
+/* The steps that led to the error */
+.k-debug ol.k-trace { margin: 0; padding: 0; list-style: none; counter-reset: k-step -1; }
+.k-debug ol.k-trace > li { counter-increment: k-step; padding: 0.35em 0.6em; border-top: 1px solid var(--k-border); }
+.k-debug ol.k-trace > li::before { content: "#" counter(k-step); display: inline-block; min-width: 2.4em; color: var(--k-muted); }
+.k-debug ol.k-trace > li.k-app { background: var(--k-app); color: var(--k-app-text); }
+.k-debug ol.k-trace > li.k-app a, .k-debug ol.k-trace > li.k-app button { color: inherit; }
+.k-debug .k-step { display: inline; overflow-wrap: anywhere; }
+.k-debug .k-tag { font-size: 0.8em; padding: 0.05em 0.5em; border-radius: 999px; background: var(--k-glass); border: 1px solid var(--k-edge); }
+
+/* Tables of names and values */
+.k-debug table.k-values { width: 100%; margin: 0.3em 0 0.8em; border-collapse: collapse; background: var(--k-surface); }
+.k-debug table.k-values td { padding: 0.3em 0.6em; border: 1px solid var(--k-border); vertical-align: top; }
+.k-debug table.k-values td:first-child { width: 1%; white-space: nowrap; }
+
+/* The panel of notices at the bottom of a page */
+#kohana_notices {
+	position: fixed; left: 0; right: 0; bottom: 0; z-index: 2147483000;
+	max-height: 60vh; overflow: auto; background: var(--k-surface);
+	border-top: 3px solid var(--k-notice); box-shadow: 0 -4px 16px var(--k-shadow);
+}
+#kohana_notices .k-bar { background: var(--k-notice); color: var(--k-notice-text); position: sticky; top: 0; }
+#kohana_notices ul { margin: 0; padding: 0; list-style: none; }
+#kohana_notices li { padding: 0.5em 1.2em; border-top: 1px solid var(--k-border); overflow-wrap: anywhere; }
+
+@media (max-width: 600px) {
+	.k-debug .k-head, .k-debug .k-content, .k-debug .k-bar { padding-left: 0.7em; padding-right: 0.7em; }
+}
+
+/* The button that changes the theme */
+.k-debug .k-theme-button, .k-debug button.k-theme-button {
+	color: inherit; text-decoration: none; font-size: 0.85em; padding: 0.1em 0.7em; border-radius: 999px;
+	border: 1px solid var(--k-edge); background: var(--k-glass); white-space: nowrap;
+}

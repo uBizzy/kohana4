@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	PHPUnit configuration of the framework. Run all tests with: vendor/bin/phpunit
+	(see modules/unittest/README.markdown for groups and filters).
+
+	Every warning, notice and deprecation makes the run fail: the code
+	must stay clean on current and future PHP versions.
+-->
+<phpunit
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+		bootstrap="modules/unittest/bootstrap.php"
+		cacheDirectory=".phpunit.cache"
+		colors="true"
+		beStrictAboutOutputDuringTests="true"
+		failOnDeprecation="true"
+		failOnNotice="true"
+		failOnWarning="true"
+		failOnPhpunitDeprecation="true"
+		failOnPhpunitWarning="true"
+		displayDetailsOnTestsThatTriggerDeprecations="true"
+		displayDetailsOnTestsThatTriggerNotices="true"
+		displayDetailsOnTestsThatTriggerWarnings="true"
+		displayDetailsOnTestsThatTriggerErrors="true"
+		displayDetailsOnPhpunitDeprecations="true"
+	>
+	<php>
+		<ini name="memory_limit" value="512M" />
+	</php>
+
+	<!-- The tests of the system and of every module -->
+	<testsuites>
+		<testsuite name="kohana">
+			<directory>system/tests</directory>
+			<directory>modules/*/tests</directory>
+			<exclude>system/tests/test_data</exclude>
+			<exclude>modules/*/tests/test_data</exclude>
+		</testsuite>
+	</testsuites>
+
+	<!-- The code that the tests cover (used by coverage reports and to tell our own deprecations from others) -->
+	<source>
+		<include>
+			<directory>application/classes</directory>
+			<directory>modules/*/classes</directory>
+			<directory>system/classes</directory>
+		</include>
+	</source>
+</phpunit>

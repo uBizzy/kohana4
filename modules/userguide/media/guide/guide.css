@@ -1,0 +1,152 @@
+/*
+ * Styles of the user guide and the API browser.
+ * The colours are the variables of the theme (Theme::css(),
+ * config/theme.php), light or dark: the template puts them in the page.
+ */
+:root { --k-header: 3.2rem; color-scheme: var(--k-scheme); }
+
+* , *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: calc(var(--k-header) + 1rem); }
+body { margin: 0; font: 16px/1.6 var(--k-font); color: var(--k-text); background: var(--k-bg); }
+a { color: var(--k-link); text-underline-offset: 2px; }
+a:hover { color: var(--k-text); }
+code, pre, kbd { font: 0.875em/1.5 var(--k-font-code); }
+small { color: var(--k-muted); font-weight: 400; }
+[hidden] { display: none !important; }
+
+/* Header: logo, sections, search */
+#kodoc-header {
+	position: sticky; top: 0; z-index: 10; height: var(--k-header); padding: 0 1.2rem;
+	display: flex; align-items: center; gap: 1.5rem; background: var(--k-bar); color: var(--k-bar-text);
+}
+#kodoc-header a { color: inherit; text-decoration: none; }
+#kodoc-header a:hover { text-decoration: underline; }
+#kodoc-logo { display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+#kodoc-logo .k-logo { height: 1.9rem; width: auto; }
+#kodoc-logo small { color: inherit; }
+#kodoc-nav { display: flex; gap: 1.2rem; white-space: nowrap; }
+#kodoc-menu-button { display: none; font: inherit; padding: 0.2em 0.7em; border: 1px solid var(--k-edge); border-radius: var(--k-radius); background: var(--k-glass); color: inherit; cursor: pointer; }
+#kodoc-search { position: relative; margin-left: auto; width: min(24rem, 40vw); }
+#kodoc-search-box, #kodoc-api-filter { width: 100%; font: inherit; padding: 0.3em 0.7em; border: 1px solid var(--k-edge); border-radius: var(--k-radius); background: var(--k-surface); color: var(--k-text); }
+#kodoc-search-results {
+	position: absolute; right: 0; top: calc(100% + 0.4rem); width: min(34rem, 92vw); max-height: 70vh; overflow: auto;
+	margin: 0; padding: 0; list-style: none; background: var(--k-surface); color: var(--k-text);
+	border: 1px solid var(--k-border); border-radius: 6px; box-shadow: 0 8px 24px var(--k-shadow);
+}
+#kodoc-search-results li { border-top: 1px solid var(--k-border); }
+#kodoc-search-results li:first-child { border-top: 0; }
+#kodoc-search-results a { display: block; padding: 0.5em 0.9em; color: var(--k-text); }
+#kodoc-search-results a:hover, #kodoc-search-results li.selected a { background: var(--k-app); color: var(--k-app-text); text-decoration: none; }
+#kodoc-search-results strong { display: block; }
+#kodoc-search-results span { display: block; font-size: 0.85em; color: var(--k-muted); overflow-wrap: anywhere; }
+#kodoc-search-results mark { background: var(--k-highlight); color: inherit; }
+#kodoc-search-results .empty { padding: 0.6em 0.9em; color: var(--k-muted); }
+
+/* Three columns: pages, content, headings of the page */
+#kodoc-page { display: grid; grid-template-columns: 17rem minmax(0, 1fr) 15rem; align-items: start; max-width: 96rem; margin: 0 auto; }
+#kodoc-topics, #kodoc-toc { position: sticky; top: var(--k-header); max-height: calc(100vh - var(--k-header)); overflow: auto; padding: 1.2rem; font-size: 0.92rem; }
+#kodoc-body { min-height: calc(100vh - var(--k-header) - 3rem); padding: 1.5rem 2.5rem 3rem; background: var(--k-surface); border: solid var(--k-border); border-width: 0 1px; }
+
+/* Menu of pages: titles of sections, and links */
+#kodoc-topics ul, #kodoc-topics ol, #kodoc-toc ul { margin: 0; padding: 0; list-style: none; }
+#kodoc-topics > ul > li, #kodoc-topics > ol > li { margin-bottom: 1rem; font-weight: 600; color: var(--k-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.04em; }
+#kodoc-topics li li { margin: 0; font-weight: 400; color: var(--k-text); text-transform: none; font-size: 0.92rem; letter-spacing: 0; }
+#kodoc-topics li li li { padding-left: 0.9rem; }
+#kodoc-topics a { display: block; padding: 0.15em 0.6em; border-radius: var(--k-radius); color: var(--k-text); text-decoration: none; }
+#kodoc-topics a:hover { background: var(--k-border); }
+#kodoc-topics a.current { background: var(--k-app); color: var(--k-app-text); font-weight: 600; }
+#kodoc-topics p { margin: 0; }
+
+/* Headings of the page */
+#kodoc-toc strong { display: block; margin-bottom: 0.4rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--k-muted); }
+#kodoc-toc a { display: block; padding: 0.1em 0; color: var(--k-muted); text-decoration: none; }
+#kodoc-toc a:hover { color: var(--k-text); }
+#kodoc-toc li.level-3 { padding-left: 0.9rem; }
+
+#kodoc-breadcrumb { margin: 0 0 1rem; padding: 0; list-style: none; display: flex; flex-wrap: wrap; font-size: 0.85rem; color: var(--k-muted); }
+#kodoc-breadcrumb li + li::before { content: "›"; margin: 0 0.5em; }
+
+/* Content */
+#kodoc-body h1 { margin: 0 0 1rem; font-size: 2rem; line-height: 1.2; }
+#kodoc-body h2 { margin: 2.2rem 0 0.8rem; padding-bottom: 0.3rem; font-size: 1.4rem; border-bottom: 1px solid var(--k-border); }
+#kodoc-body h3 { margin: 1.8rem 0 0.6rem; font-size: 1.15rem; }
+#kodoc-body h4 { margin: 1.2rem 0 0.4rem; font-size: 1rem; }
+#kodoc-body p, #kodoc-body ul, #kodoc-body ol, #kodoc-body table, #kodoc-body pre, #kodoc-body blockquote, #kodoc-body dl { margin: 0 0 1rem; }
+#kodoc-body li > p { margin-bottom: 0.4rem; }
+#kodoc-body img { max-width: 100%; height: auto; border: 1px solid var(--k-border); border-radius: var(--k-radius); }
+#kodoc-body hr { border: 0; border-top: 1px solid var(--k-border); margin: 2rem 0; }
+#kodoc-body blockquote { padding: 0.1rem 1rem; border-left: 4px solid var(--k-border); color: var(--k-muted); }
+#kodoc-body :not(pre) > code { padding: 0.1em 0.35em; border-radius: var(--k-radius); background: var(--k-bg); overflow-wrap: anywhere; }
+#kodoc-body pre { position: relative; padding: 0.8rem 1rem; overflow: auto; background: var(--k-bg); border: 1px solid var(--k-border); border-radius: 6px; tab-size: 4; }
+#kodoc-body pre code { font-size: 0.85rem; }
+#kodoc-body p.note { padding: 0.7rem 1rem; background: var(--k-highlight); border-radius: 6px; }
+#kodoc-body table { border-collapse: collapse; display: block; max-width: 100%; overflow: auto; }
+#kodoc-body th, #kodoc-body td { padding: 0.4em 0.8em; border: 1px solid var(--k-border); text-align: left; vertical-align: top; }
+#kodoc-body th { background: var(--k-bg); }
+#kodoc-body .center { text-align: center; }
+#kodoc-body .right { text-align: right; }
+
+/* Colours of PHP code */
+.hl-default { color: var(--k-text); }
+.hl-keyword { color: var(--k-code-keyword); }
+.hl-string { color: var(--k-code-string); }
+.hl-comment { color: var(--k-code-comment); font-style: italic; }
+.hl-html { color: var(--k-text); }
+
+/* "Copy" button of a code block */
+button.kodoc-copy { position: absolute; top: 0.4rem; right: 0.4rem; font: 0.75rem system-ui, sans-serif; padding: 0.15em 0.6em; border: 1px solid var(--k-border); border-radius: var(--k-radius); background: var(--k-surface); color: var(--k-muted); cursor: pointer; opacity: 0; }
+pre:hover button.kodoc-copy, button.kodoc-copy:focus { opacity: 1; }
+
+/* List of guides */
+ul.kodoc-guides { padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.8rem; }
+ul.kodoc-guides li { padding: 0.8rem 1rem; border: 1px solid var(--k-border); border-radius: 6px; background: var(--k-bg); }
+ul.kodoc-guides a { display: block; font-weight: 600; }
+ul.kodoc-guides span { font-size: 0.9rem; color: var(--k-muted); }
+
+/* API browser */
+#kodoc-body h1 small.extends { display: block; font-size: 0.9rem; }
+#kodoc-body dl.tags { display: grid; grid-template-columns: max-content 1fr; gap: 0.1rem 1rem; font-size: 0.9rem; }
+#kodoc-body dl.tags dt { color: var(--k-muted); }
+#kodoc-body dl.tags dd { margin: 0; grid-column: 2; }
+#kodoc-body div.toc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; padding: 1rem; margin-bottom: 1rem; background: var(--k-bg); border-radius: 6px; font-size: 0.9rem; }
+#kodoc-body div.toc h3 { margin: 0 0 0.4rem; }
+#kodoc-body div.toc ul { margin: 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
+#kodoc-body dl.constants dt, #kodoc-body dl.properties dt { margin-top: 1rem; font-weight: 600; }
+#kodoc-body dl.constants dd, #kodoc-body dl.properties dd { margin: 0.3rem 0 0 1rem; }
+#kodoc-body section.method { margin-top: 1.5rem; padding-top: 0.5rem; border-top: 1px solid var(--k-border); }
+#kodoc-body section.method h3 { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1rem; }
+#kodoc-body section.method h3 small small { font-size: 1em; }
+#kodoc-body details.method-source summary { cursor: pointer; color: var(--k-link); margin-bottom: 0.5rem; }
+#kodoc-body div.class-list { columns: 16rem; column-gap: 2rem; }
+#kodoc-body div.class-list section { break-inside: avoid; margin-bottom: 1rem; }
+#kodoc-body div.class-list h2 { margin: 0 0 0.3rem; padding: 0; border: 0; font-size: 1rem; }
+#kodoc-body div.class-list ul { margin: 0; padding: 0; list-style: none; font-size: 0.85rem; }
+#kodoc-body pre.debug { font-size: 0.85rem; }
+
+#kodoc-footer { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 1.2rem; font-size: 0.8rem; color: var(--k-muted); border-top: 1px solid var(--k-border); }
+
+/* Narrow screens: the headings column goes first, the menu opens with a button */
+@media (max-width: 75rem) {
+	#kodoc-page { grid-template-columns: 17rem minmax(0, 1fr); }
+	#kodoc-toc { display: none; }
+}
+@media (max-width: 50rem) {
+	#kodoc-page { display: block; }
+	#kodoc-menu-button { display: block; }
+	#kodoc-nav { display: none; }
+	#kodoc-topics { display: none; position: static; max-height: none; border-bottom: 1px solid var(--k-border); }
+	#kodoc-topics.open { display: block; }
+	#kodoc-body { padding: 1rem; border-width: 0; }
+	#kodoc-body div.toc { grid-template-columns: 1fr; }
+}
+
+@media print {
+	#kodoc-header, #kodoc-topics, #kodoc-toc, #kodoc-footer, button.kodoc-copy { display: none; }
+	#kodoc-page { display: block; }
+	#kodoc-body { border: 0; padding: 0; }
+}
+
+/* The button that changes the theme */
+#kodoc-header .k-theme-button { margin-left: auto; }
+.k-theme-button + #kodoc-search { margin-left: 0; }
+.k-theme-button { font: inherit; font-size: 0.85rem; padding: 0.15em 0.8em; border: 1px solid var(--k-edge); border-radius: 999px; background: var(--k-glass); color: inherit; cursor: pointer; white-space: nowrap; }
