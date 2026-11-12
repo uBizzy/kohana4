@@ -142,8 +142,8 @@ $modules = array(
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 
-	// Extra modules, not part of the core
-	// 'ub_debug'   => DOCROOT.'extra/ub_debug', // Debug bar (development only)
+	// Extra modules, installed from https://github.com/uBizzy/kohana4-modules
+	// 'ub_debug'   => MODPATH.'ub_debug',   // Debug bar (development only)
 );
 
 /**

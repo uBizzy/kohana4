@@ -2,4 +2,8 @@
 /build/
 /.phpunit.cache/
 /.phpunit.result.cache
-/extra/*
+
+# The extra modules (kohana4-modules) are installed into modules/ and have
+# a repository of their own
+/modules/ub_*/
+/extra/

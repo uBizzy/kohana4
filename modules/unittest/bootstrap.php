@@ -137,10 +137,6 @@ foreach ($modules_iterator as $module)
 	}
 }
 
-// Modules kept elsewhere are tested with a bootstrap of their own, which
-// names them in $unittest_modules before it includes this file
-$modules += $unittest_modules ?? [];
-
 Kohana::modules($modules);
 
 unset($modules_iterator, $modules, $module);

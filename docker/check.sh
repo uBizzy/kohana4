@@ -27,7 +27,7 @@ if [ ! -d vendor ]; then
 fi
 
 step 'Syntax'
-find system modules application public docker $(test -d extra && echo extra) -name '*.php' -not -path '*/vendor/*' -print0 | xargs -0 -n 50 -P 4 php -l > /dev/null
+find system modules application public docker -name '*.php' -not -path '*/vendor/*' -print0 | xargs -0 -n 50 -P 4 php -l > /dev/null
 
 step 'Code style'
 vendor/bin/phpcs -q
@@ -52,16 +52,6 @@ vendor/bin/phpstan analyse --no-progress --memory-limit=1G
 
 step 'Tests'
 vendor/bin/phpunit "$@"
-
-# The modules of extra/ are not part of the core and have a repository of
-# their own: when they are there, they are checked apart, with the same rules
-if [ -d extra ]; then
-	step 'Extra modules: code style, types, static analysis and tests'
-	vendor/bin/phpcs -q extra
-	php docker/check-types.php extra/*/classes
-	vendor/bin/phpstan analyse -c extra/phpstan.neon --no-progress --memory-limit=1G
-	vendor/bin/phpunit -c extra/phpunit.xml
-fi
 
 echo
 echo 'All checks passed.'

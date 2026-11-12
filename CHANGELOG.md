@@ -121,7 +121,7 @@ Renatus is a first name of Latin origin which means "born again" ("natus" = "bor
 
 ## Extra modules
 
-The modules that are not part of the core have a repository and a list of changes of their own.
+The modules that are not part of the core have a repository and a list of changes of their own: https://github.com/uBizzy/kohana4-modules
 
 ## Fixes
 

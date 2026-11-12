@@ -90,7 +90,7 @@ Enabled one by one in `application/bootstrap.php`; a module that is not enabled 
 | `ko7` **new** | The class names of Koseven (`KO7_*`) as aliases, for code that still uses them |
 | `ko9` **new** | The same for the `KO9_*` class names |
 
-Modules that are not part of the core (a debug bar, file storage, a log reader, settings in the database, loading libraries of others) have a repository of their own.
+Modules that are not part of the core (a debug bar, file storage, a log reader, settings in the database, loading libraries of others) are not shipped with the framework. They are in a repository of their own, [kohana4-modules](https://github.com/uBizzy/kohana4-modules), and are copied into `modules/` like any other module.
 
 ### Themes
 
@@ -225,5 +225,5 @@ This project stands on nearly two decades of work by other people.
 - This project: https://github.com/uBizzy/kohana4
 - Questions, bugs and security problems: https://github.com/uBizzy/kohana4/issues (see [SECURITY.md](SECURITY.md))
 - Konine: https://github.com/hospicedev/konine
-- Extra modules: to be added
+- Extra modules: https://github.com/uBizzy/kohana4-modules
 - The logo and the icon in seven colours, as SVG and PNG: `system/media/guide/kohana/logo/`

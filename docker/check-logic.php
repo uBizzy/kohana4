@@ -17,20 +17,14 @@
  * says: "if ($row = $result->current() AND $row->active)".
  *
  *     php docker/check-logic.php            (run from the project root)
- *     php docker/check-logic.php extra
+ *     php docker/check-logic.php modules/orm
  *
- * Without arguments the system, the modules, the extra modules, the
+ * Without arguments the system, the modules, the
  * application and this directory are checked, tests included. Ends with
  * an error status when something is found.
  */
 $root  = dirname(__DIR__);
 $paths = array_slice($argv, 1) ?: [$root.'/system', $root.'/modules', $root.'/application', $root.'/docker', $root.'/public'];
-
-// The extra modules have a repository of their own: checked when they are there
-if (count($argv) === 1 AND is_dir($root.'/extra'))
-{
-	$paths[] = $root.'/extra';
-}
 $files = [];
 
 foreach ($paths as $path)

@@ -26,11 +26,11 @@ Kohana::modules([
 
 ### Extra modules
 
-The directory `extra/` holds modules that are not part of the core. They are enabled the same way, by their path, and their classes start with `UB_`:
+Modules that are not part of the core are in a repository of their own, [kohana4-modules](https://github.com/uBizzy/kohana4-modules). Copy the ones you want into `modules/`; they are enabled the same way, and their classes start with `UB_`:
 
 ```php
 Kohana::modules([
-	'ub_debug' => DOCROOT.'extra/ub_debug',   // Debug bar, development only
+	'ub_debug' => MODPATH.'ub_debug',   // Debug bar, development only
 ]);
 ```
 

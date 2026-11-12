@@ -13,7 +13,7 @@ The profiler measures how long pieces of code take and how much memory they use.
 
 The table lists every measured piece by group: minimum, maximum, average and total time and memory, and the totals of the request. The framework measures its own steps (finding files, requests, every view that is rendered) and the database module measures every query.
 
-[!!] The debug bar of the `ub_debug` module (in `extra/`, not part of the core) shows the same measurements, and much more, in a bar at the bottom of the page, without anything in your layout.
+[!!] The debug bar of the `ub_debug` module (one of the extra modules, not part of the core) shows the same measurements, and much more, in a bar at the bottom of the page, without anything in your layout.
 
 ## What the framework measures
 

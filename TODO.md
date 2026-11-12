@@ -10,8 +10,6 @@ is written.
 - **Rolling development**: write down what a user can count on: when a
   breaking change may come, how it is announced, how long a PHP version
   stays supported. To be defined.
-- **Extra modules**: add the link to their repository in `README.md`
-  when it exists.
 
 ## 2. For the future
 

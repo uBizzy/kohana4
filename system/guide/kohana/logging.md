@@ -89,7 +89,7 @@ Kohana::$log->attach(new Log_JSON(APPPATH.'logs'));
 - An error has its reference code, its class and its trace in the same line.
 - The address of the visitor is not written.
 
-The `ub_log_reader` module of `extra/` searches both kinds of log.
+The `ub_log_reader` module (one of the extra modules, not part of the core) searches both kinds of log.
 
 ### A writer of your own
 

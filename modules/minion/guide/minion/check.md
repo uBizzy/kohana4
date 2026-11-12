@@ -53,7 +53,7 @@ The rest depends on the modules that are enabled in the bootstrap:
 In **production** (`KOHANA_ENV=production`) it also warns about what belongs to development:
 
 - `public/install.php` is still there;
-- a module for development is enabled: userguide, unittest, codebench, and any module that names itself in a `config/check.php` (the debug bar of `extra/` do);
+- a module for development is enabled: userguide, unittest, codebench, and any module that names itself in a `config/check.php` (the debug bar of the extra modules does);
 - profiling is on, or internal caching is off.
 
 ## Good to know

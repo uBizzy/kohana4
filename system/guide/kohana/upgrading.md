@@ -483,13 +483,13 @@ Nothing here needs a change; these are available to use.
 | ORM on SQLite, PostgreSQL and MySQL through PDO | `Database_PDO::list_tables()`, `list_columns()` |
 | Photos turned upright by their EXIF note | `Image::auto_orient()` |
 | AVIF images, HEIC photos (Imagick), thumbnails, images from data | `Image::thumbnail()`, `Image::from_string()`, `Image::is_heif()` |
-| A bar that shows what the request did, in development | the `ub_debug` module, in `extra/` (not part of the core) |
-| Files on the disk, on an FTP server or in S3, behind the same methods | the `ub_storage` module, in `extra/` (not part of the core) |
+| A bar that shows what the request did, in development | the `ub_debug` module, one of the extra modules (not part of the core) |
+| Files on the disk, on an FTP server or in S3, behind the same methods | the `ub_storage` module, one of the extra modules (not part of the core) |
 | Logs as one JSON object on each line, with a code for each request | `Log_JSON` |
-| A search through the logs and the most frequent errors, from the command line and on a page (in production for listed addresses only), with an optional index | the `ub_log_reader` module, in `extra/` (not part of the core) |
+| A search through the logs and the most frequent errors, from the command line and on a page (in production for listed addresses only), with an optional index | the `ub_log_reader` module, one of the extra modules (not part of the core) |
 | An address checked against a list of addresses and networks | `Request::ip_in_list()` |
-| Settings saved in the database, changed while the application runs | the `ub_settings` module, in `extra/` (not part of the core) |
-| Libraries of others loaded without Composer: PHPMailer, HTML Purifier, TCPDF, ... | the `ub_autoload` module, in `extra/` (not part of the core) |
+| Settings saved in the database, changed while the application runs | the `ub_settings` module, one of the extra modules (not part of the core) |
+| Libraries of others loaded without Composer: PHPMailer, HTML Purifier, TCPDF, ... | the `ub_autoload` module, one of the extra modules (not part of the core) |
 | A complete model example: tables, models, controller, form and test | the tutorial "A Model from Start to End" |
 | Themes for the framework's own pages (default, Catppuccin, Dracula, Nord, Solarized, Gruvbox, Tokyo Night, One), each light and dark, with a button, your own colours, themes and fonts | `Theme`, `config/theme.php` |
 | Modules for development that `./minion check` warns about | `config/check.php` |

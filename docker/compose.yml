@@ -23,7 +23,7 @@ services:
       KOHANA_TEST_PGSQL_PASSWORD: test
       KOHANA_TEST_REDIS_HOST: redis
       KOHANA_TEST_MEMCACHED_HOST: memcached
-      # For the tests of extra/ub_storage
+      # For the tests of the ub_storage module, when it is installed
       UB_STORAGE_TEST_FTP_HOST: ftp
       UB_STORAGE_TEST_FTP_USER: kohana
       UB_STORAGE_TEST_FTP_PASSWORD: kohanatest

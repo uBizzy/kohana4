@@ -51,22 +51,13 @@ class Kohana_GuideTest extends Unittest_TestCase
 	}
 
 	/**
-	 * @var array<int, string>|null  The guides to check, all of them when null.
-	 *                               Set by the bootstrap of the extra modules,
-	 *                               which checks only their guides.
-	 */
-	public static ?array $guides = null;
-
-	/**
 	 * The names of the guides to check.
 	 *
 	 * @return array<int, string>
 	 */
 	protected static function _guides(): array
 	{
-		$guides = array_keys(Kohana::$config->load('userguide.modules'));
-
-		return (static::$guides === null) ? $guides : array_values(array_intersect($guides, static::$guides));
+		return array_keys(Kohana::$config->load('userguide.modules'));
 	}
 
 	/**
