@@ -8,7 +8,8 @@ The list to go through before a site goes live.
 - `public/install.php` is deleted.
 - `application/cache` and `application/logs` are writable by the web server, and nothing else is.
 - HTTPS is on, and plain HTTP redirects to it.
-- `display_errors` is off in `php.ini`.
+- `display_errors` and `expose_php` are off in `php.ini`.
+- Uploads are saved outside `public/`, and sent with `send_file()`.
 
 ## The environment
 
@@ -28,7 +29,7 @@ In production:
 
 ## Check it
 
-With the minion module enabled, one command checks most of this list on the server: PHP and its extensions, the writable directories, the cookie salt, the database and cache connections, pending migrations, and in production the settings that belong to development. See [Checking the Installation](../../minion/check).
+With the minion module enabled, one command checks most of this list on the server: PHP and its extensions, the writable directories, the cookie salt, the database and cache connections, pending migrations, and in production the settings that belong to development or make the site slower or less safe (OPcache, `expose_php`, no Content-Security-Policy, uploads inside `public/`). See [Checking the Installation](../../minion/check).
 
 ```bash
 ./minion check
@@ -58,6 +59,33 @@ Kohana::modules([
 	'auth'     => MODPATH.'auth',
 ]);
 ```
+
+The bootstrap that comes with the framework already switches `caching` on and `profile` off in production, and sends a Content-Security-Policy.
+
+## Speed
+
+- **OPcache is on.** Without it PHP compiles every file at every request; nothing else makes as much difference. When the files only change with a deploy, PHP need not look at them at all:
+
+```text
+; php.ini
+opcache.enable=1
+opcache.memory_consumption=128
+opcache.max_accelerated_files=10000
+opcache.validate_timestamps=0   ; then restart PHP-FPM, or reload Apache, after each deploy
+```
+
+- **The framework remembers where files are** (`caching`, above).
+- **Apache: put the rules of `.htaccess` in the configuration of the site** and set `AllowOverride None`. Apache then stops looking for `.htaccess` files in every directory at every request:
+
+```text
+<Directory /var/www/example/public>
+	AllowOverride None
+	# ... the content of public/example.htaccess ...
+</Directory>
+```
+
+- **HTTP/2, and Brotli beside gzip**, are settings of the web server: both make pages with many files load faster.
+- **Static files** are kept by the browser and checked for changes, as `public/example.htaccess` and `public/example.nginx.conf` set up. Give them a name that changes with their content and they can be kept for a year.
 
 ## Settings
 

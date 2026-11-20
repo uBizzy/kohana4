@@ -199,7 +199,6 @@ class Kohana_CacheTest extends Unittest_TestCase {
 
 		$cache_reflection = new ReflectionClass('Cache');
 		$sanitize_id = $cache_reflection->getMethod('_sanitize_id');
-		$sanitize_id->setAccessible(true);
 
 		// Get Prefix if set
 		if ( ! $prefix = Kohana::$config->load('cache')->get('prefix', false)) {

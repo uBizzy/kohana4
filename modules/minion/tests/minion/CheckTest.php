@@ -350,7 +350,13 @@ class Minion_CheckTest extends Unittest_TestCase
 		// A module of your own that is for development names itself in config/check.php
 		$this->setEnvironment(['check.development_modules' => ['userguide', 'unittest', 'codebench', 'my_tool']]);
 
+		$this->setEnvironment([
+			'HTTP::$security_headers'    => [],
+			'Upload::$default_directory' => PUBPATH,
+		]);
+
 		$task = $this->task('userguide', 'my_tool', 'pagination');
+		$task->ini = ['opcache.enable' => false, 'expose_php' => true];
 		$task->execute();
 
 		$details = array_column(array_filter($task->results(), fn ($result) => $result[1] === 'Production'), 2);
@@ -361,6 +367,12 @@ class Minion_CheckTest extends Unittest_TestCase
 		$this->assertContains('profiling is on: set "profile" to false in Kohana::init()', $details);
 		$this->assertContains('internal caching is off: set "caching" to true in Kohana::init()', $details);
 		$this->assertSame(is_file(PUBPATH.'install.php'), in_array('delete install.php from the public directory', $details, true));
+
+		// What makes a site slower or less safe
+		$this->assertContains('OPcache is off: PHP compiles every file at every request', $details);
+		$this->assertContains('PHP names itself and its version in every response: set expose_php to Off in php.ini', $details);
+		$this->assertContains('no Content-Security-Policy is sent: see HTTP::$security_headers in the bootstrap', $details);
+		$this->assertContains('uploads are saved inside the public directory: keep them outside, and send them with send_file()', $details);
 		$this->assertNotContains('fail', array_column($task->results(), 0));
 	}
 
@@ -372,8 +384,14 @@ class Minion_CheckTest extends Unittest_TestCase
 			'Kohana::$caching'     => true,
 		]);
 
+		$this->setEnvironment([
+			'HTTP::$security_headers'    => ['content-security-policy' => "default-src 'self'"],
+			'Upload::$default_directory' => APPPATH.'cache',
+		]);
+
 		$task = $this->task();
 		$task->install_file = false;
+		$task->ini = ['opcache.enable' => true, 'expose_php' => false];
 		$task->checks();
 
 		$this->assertSame(['ok', 'Production', 'no development setting found'], $task->result('Production'));
@@ -417,6 +435,21 @@ class Minion_CheckTest_Task extends Task_Check
 	protected function _install_file(): bool
 	{
 		return $this->install_file ?? parent::_install_file();
+	}
+
+	/**
+	 * @var array<string, bool>  Settings of php.ini that the test chooses
+	 */
+	public array $ini = [];
+
+	protected function _ini(string $name): bool
+	{
+		return $this->ini[$name] ?? parent::_ini($name);
+	}
+
+	protected function _opcache(): bool
+	{
+		return isset($this->ini['opcache.enable']) ? $this->ini['opcache.enable'] : parent::_opcache();
 	}
 
 	public function checks(): void

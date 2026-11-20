@@ -7,7 +7,8 @@
  *
  * Every check is "ok", "warn" or "fail". When a check fails the command
  * ends with an error status, so a deploy script stops; warnings do not.
- * In production it also warns about settings meant for development.
+ * In production it also warns about settings meant for development, and
+ * about what makes a site slower or less safe than it could be.
  *
  * Passwords, keys and connection settings are never written.
  *
@@ -334,6 +335,42 @@ class Kohana_Task_Check extends Minion_Task {
 	}
 
 	/**
+	 * Tells whether a setting of php.ini is switched on, as the command
+	 * line sees it.
+	 *
+	 * @param   string  $name  name of the setting
+	 * @return  bool
+	 */
+	protected function _ini(string $name): bool
+	{
+		return filter_var(ini_get($name), FILTER_VALIDATE_BOOLEAN);
+	}
+
+	/**
+	 * Tells whether OPcache is installed and switched on for the web
+	 * server ("opcache.enable"; the command line has a switch of its own).
+	 *
+	 * @return  bool
+	 */
+	protected function _opcache(): bool
+	{
+		return extension_loaded('Zend OPcache') AND $this->_ini('opcache.enable');
+	}
+
+	/**
+	 * Tells whether [Upload::$default_directory] is inside the public
+	 * directory, where the web server would serve what visitors upload.
+	 *
+	 * @return  bool
+	 */
+	protected function _uploads_are_public(): bool
+	{
+		$directory = realpath(Upload::$default_directory);
+
+		return defined('PUBPATH') AND $directory !== false AND str_starts_with($directory.DIRECTORY_SEPARATOR, PUBPATH);
+	}
+
+	/**
 	 * Settings and files that are meant for development and should not
 	 * be found on a production server. All of these are warnings.
 	 *
@@ -367,6 +404,26 @@ class Kohana_Task_Check extends Minion_Task {
 		if ( ! Kohana::$caching)
 		{
 			$found[] = 'internal caching is off: set "caching" to true in Kohana::init()';
+		}
+
+		if ( ! $this->_opcache())
+		{
+			$found[] = 'OPcache is off: PHP compiles every file at every request';
+		}
+
+		if ($this->_ini('expose_php'))
+		{
+			$found[] = 'PHP names itself and its version in every response: set expose_php to Off in php.ini';
+		}
+
+		if ( ! isset(HTTP::$security_headers['content-security-policy']))
+		{
+			$found[] = 'no Content-Security-Policy is sent: see HTTP::$security_headers in the bootstrap';
+		}
+
+		if ($this->_uploads_are_public())
+		{
+			$found[] = 'uploads are saved inside the public directory: keep them outside, and send them with send_file()';
 		}
 
 		foreach ($found as $detail)

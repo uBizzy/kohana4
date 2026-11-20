@@ -39,6 +39,8 @@ Also set `Cookie::$secure = true`.
 
 A Content-Security-Policy (CSP) lists where scripts, styles and images may come from. A script injected through an [XSS](xss) hole is then not run.
 
+The bootstrap that comes with the framework sends this one:
+
 ```php
 HTTP::$security_headers['content-security-policy'] =
 	"default-src 'self'; script-src 'self' 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}'; img-src 'self' data:";

@@ -56,6 +56,13 @@ In **production** (`KOHANA_ENV=production`) it also warns about what belongs to 
 - a module for development is enabled: userguide, unittest, codebench, and any module that names itself in a `config/check.php` (the debug bar of the extra modules does);
 - profiling is on, or internal caching is off.
 
+And about what makes a site slower or less safe than it could be:
+
+- OPcache is off, so PHP compiles every file at every request;
+- `expose_php` is on, so every response names PHP and its version;
+- no Content-Security-Policy is sent;
+- uploads are saved inside the public directory.
+
 ## Good to know
 
 - **No secret is written.** Of the cookie salt only the length is shown, of the encryption key only whether it is set. A database that cannot be reached shows the message of the database, which names the user and host but never the password.

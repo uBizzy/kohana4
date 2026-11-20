@@ -1,5 +1,13 @@
 # Changes
 
+## After 4.0.0 (not released yet)
+
+- **A new application starts safer and faster.** The bootstrap that comes with the framework sends a Content-Security-Policy, and in production it remembers where files are and does not measure the request. It was rewritten in today's PHP, with the time zone `UTC`. An existing application keeps its own bootstrap and is not changed.
+- **`./minion check` looks at more in production**: it warns when OPcache is off, `expose_php` is on, no Content-Security-Policy is sent, or uploads are saved inside the public directory.
+- **One web server example each**: `public/example.htaccess` for Apache 2.4 (the file for Apache 2.2 is gone) and a new `public/example.nginx.conf`. Both refuse hidden files and directories such as `.git` (the old file only covered hidden files), run no PHP file but `index.php`, compress text, and let the browser keep static files while checking them for changes. Certificate pinning, `X-XSS-Protection` and the Flash header, which browsers no longer read, are gone.
+- The deploy page of the guide has a section on speed: OPcache, the rules of `.htaccess` in the configuration of the site, HTTP/2.
+- **PHP 8.5**: the tests pass on it. Three tests were adjusted (calls PHP 8.5 deprecates, and a new session cookie setting); the framework itself needed no change.
+
 ## 4.0.0 "renatus" (2026-11-15)
 
 What changed since Koseven 3.3.x, by kind. For what an application has to do about each breaking change, see the guide: [Upgrading to 4.0](system/guide/kohana/upgrading.md).

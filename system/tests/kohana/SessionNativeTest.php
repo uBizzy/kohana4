@@ -105,14 +105,17 @@ class Kohana_SessionNativeTest extends Unittest_TestCase
 		$this->assertSame('1', ini_get('session.use_only_cookies'));
 		$this->assertSame('', session_cache_limiter());
 
-		$this->assertEquals([
+		$expected = [
 			'lifetime' => 600,
 			'path'     => '/shop/',
 			'domain'   => 'www.example.com',
 			'secure'   => true,
 			'httponly' => true,
 			'samesite' => 'Strict',
-		], session_get_cookie_params());
+		];
+
+		// Newer PHP versions add settings of their own (PHP 8.5: "partitioned")
+		$this->assertEquals($expected, array_intersect_key(session_get_cookie_params(), $expected));
 	}
 
 	public function test_data_is_kept_between_requests(): void
