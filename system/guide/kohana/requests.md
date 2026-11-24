@@ -57,7 +57,12 @@ Request::$user_agent;   // "Mozilla/5.0 ..."
 // Parts of the user agent
 $browser = Request::user_agent('browser');
 $mobile  = Request::user_agent('mobile');
+
+// A short text to keep with a history line
+$device = Text::device(Request::$user_agent);   // "PC|Windows|Firefox 151"
 ```
+
+[!!] The user agent is whatever the visitor sends, and browsers hide part of the truth themselves (Windows 10 and 11 look the same). `Text::device()` is a hint for a person who reads a log, such as "from a Windows PC, with Firefox". Never decide anything with it.
 
 ### Behind a proxy or load balancer
 

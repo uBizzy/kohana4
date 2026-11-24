@@ -8,6 +8,7 @@
 - The deploy page of the guide has a section on speed: OPcache, the rules of `.htaccess` in the configuration of the site, HTTP/2.
 - **PHP 8.5**: the tests pass on it. Three tests were adjusted (calls PHP 8.5 deprecates, and a new session cookie setting); the framework itself needed no change.
 - **Secrets live in `application/config/` only.** The cookie salt is no longer written in the bootstrap: the new bootstrap reads `cookie_salt` from `application/config/app.php` (a copy of the new `system/config/app.php`), and `application/config/` is ignored by git. Everything else of an application can be committed safely. `Cookie::$salt` works as before; an existing bootstrap that sets it is not changed. The example password in the config of the database module is now empty.
+- **`Text::device()`** (new): a short text about where a request came from, made of its user agent: `PC|Windows|Firefox 151`, `Mobile|Android|Chrome 141`, `Robot|Googlebot`, `Other|curl`. At most 64 printable characters, to keep with a line of a history or a log. It is a hint for a person, not something to trust: the user agent is what the visitor sends.
 - **ORM**: a save that fails validation says which field failed which rule in the message of its exception (`Failed to validate user: email (not_empty)`), so the log shows where it failed. The values are not in it. In production the visitor still sees the general error page with its code.
 
 ## 4.0.0 "renatus" (2026-11-15)

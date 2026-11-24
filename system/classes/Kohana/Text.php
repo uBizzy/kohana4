@@ -737,4 +737,83 @@ class Kohana_Text {
 		return false;
 	}
 
+	/**
+	 * Returns a short description of where a request came from, made
+	 * of its user agent: the kind of device, the platform and the
+	 * browser with its main version.
+	 *
+	 *     // "PC|Windows|Firefox 151", "Mobile|Android|Chrome 141",
+	 *     // "Robot|Googlebot", "Other|curl"
+	 *     $device = Text::device(Request::$user_agent);
+	 *
+	 * It is a hint for a person who reads a history ("Joe changed this
+	 * from a Windows PC, with Firefox"), short enough to store with
+	 * every line.
+	 *
+	 * [!!] Never trust it. A user agent is whatever the visitor sends,
+	 * and browsers themselves hide the truth: Windows 10 and 11 look
+	 * the same, a tablet often says it is a computer. Do not decide
+	 * anything about security with it.
+	 *
+	 * @param   string  $agent  the user agent, as it was sent
+	 * @return  string  at most 64 characters; empty for an empty user agent
+	 * @uses    Text::user_agent
+	 */
+	public static function device(string $agent): string
+	{
+		// Only what can be printed, and no more than a browser sends
+		$agent = substr((string) preg_replace('/[^\x20-\x7E]/', '', $agent), 0, 512);
+
+		if ($agent === '')
+			return '';
+
+		$robot = Text::user_agent($agent, 'robot');
+
+		if (is_string($robot))
+			return substr('Robot|'.$robot, 0, 64);
+
+		// The families only: the versions that browsers send are not true.
+		// The order matters: Android says "Linux" too, an iPhone "Mac OS X"
+		$platforms = [
+			'windows'   => 'Windows',
+			'android'   => 'Android',
+			'iphone'    => 'iOS',
+			'ipad'      => 'iOS',
+			'ipod'      => 'iOS',
+			'mac os x'  => 'macOS',
+			'macintosh' => 'macOS',
+			'cros'      => 'ChromeOS',
+			'linux'     => 'Linux',
+		];
+
+		$platform = null;
+
+		foreach ($platforms as $search => $name)
+		{
+			if (stripos($agent, $search) !== false)
+			{
+				$platform = $name;
+				break;
+			}
+		}
+
+		$browser = Text::user_agent($agent, 'browser');
+
+		if ($platform === null OR ! is_string($browser))
+		{
+			// A script or a program: the name it gives itself
+			return 'Other'.(preg_match('/^[A-Za-z0-9._-]{1,32}/', $agent, $match) ? '|'.$match[0] : '');
+		}
+
+		// Safari keeps its version apart from its name
+		$version = ($browser === 'Safari' AND preg_match('#Version/([0-9]+)#', $agent, $match))
+			? $match[1]
+			: Text::user_agent($agent, 'version');
+
+		$version = is_string($version) ? (int) $version : 0;
+		$mobile  = (in_array($platform, ['Android', 'iOS'], true) OR stripos($agent, 'mobi') !== false);
+
+		return substr(($mobile ? 'Mobile' : 'PC').'|'.$platform.'|'.$browser.(($version > 0) ? ' '.$version : ''), 0, 64);
+	}
+
 }
