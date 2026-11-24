@@ -50,7 +50,7 @@ return [
 			 */
 			'dsn'        => 'mysql:host=localhost;dbname=koseven',
 			'username'   => 'root',
-			'password'   => 'r00tdb',
+			'password'   => '',
 			'persistent' => false,
 		],
 		/**

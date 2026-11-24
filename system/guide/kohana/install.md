@@ -38,7 +38,7 @@ Then open `http://localhost:8000/`.
 
 ## First settings
 
-Open `application/bootstrap.php` and set these four things.
+Open `application/bootstrap.php` and set these three things.
 
 ```php
 // 1. The time zone and the language of your site
@@ -51,17 +51,25 @@ Kohana::init([
 	'index_file' => false,   // see "Clean URLs"
 ]);
 
-// 3. A long random text that signs the cookies
-Cookie::$salt = 'put-at-least-32-random-characters-here';
-
-// 4. The modules you use
+// 3. The modules you use
 Kohana::modules([
 	'database' => MODPATH.'database',
 	'orm'      => MODPATH.'orm',
 ]);
 ```
 
+Then copy `system/config/app.php` to `application/config/app.php` and set the secret that signs the cookies:
+
+```php
+// application/config/app.php
+return [
+	'cookie_salt' => 'put-at-least-32-random-characters-here',
+];
+```
+
 [!!] Generate the cookie salt, do not invent it: `php -r "echo bin2hex(random_bytes(32));"`
+
+[!!] Secrets (keys, tokens, salts, passwords) go in `application/config/` only, never in the bootstrap or in another file. The directory is kept out of version control, so everything else can be committed safely.
 
 Also list the host names of your site in `application/config/url.php`. A request that names another host is refused as soon as a full address is built from it:
 

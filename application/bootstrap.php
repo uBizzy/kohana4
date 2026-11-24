@@ -141,12 +141,11 @@ Kohana::modules([
 // -- Security -----------------------------------------------------------------
 
 /**
- * The key that signs cookies: a long random value, only for this site.
- * Without it no cookie can be set. Make one with:
- *
- *     php -r 'echo bin2hex(random_bytes(32)), "\n";'
+ * The key that signs cookies. It is a secret, so it is not written here:
+ * set "cookie_salt" in application/config/app.php (a copy of
+ * system/config/app.php). Without it no cookie can be set.
  */
-// Cookie::$salt = '';
+Cookie::$salt = Kohana::$config->load('app')->get('cookie_salt');
 
 /**
  * Cookies are safe by default: not readable from JavaScript ($httponly),

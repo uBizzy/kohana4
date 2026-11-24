@@ -133,7 +133,7 @@ class Minion_CheckTest extends Unittest_TestCase
 			$this->assertSame('1 of 6 checks failed.', $e->format_for_cli());
 		}
 
-		$this->assertSame(['fail', 'Cookie salt', 'Cookie::$salt is not set in the bootstrap'], $task->result('Cookie salt'));
+		$this->assertSame(['fail', 'Cookie salt', 'cookie_salt is not set in application/config/app.php'], $task->result('Cookie salt'));
 		$this->assertStringContainsString('Logs directory', $this->written());
 	}
 

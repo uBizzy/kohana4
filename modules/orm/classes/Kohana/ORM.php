@@ -200,8 +200,10 @@ class Kohana_ORM extends Model implements Serializable {
 	protected ?string $_table_name = null;
 
 	/**
-	 * Table columns
-	 * @var array<string, array<string, mixed>>|null
+	 * Table columns: what the database tells of each, by name. A model
+	 * that lists its columns itself (to spare the query that asks the
+	 * database) can give null for each: `'id' => null`.
+	 * @var array<string, array<string, mixed>|null>|null
 	 */
 	protected ?array $_table_columns = null;
 
@@ -1564,7 +1566,21 @@ class Kohana_ORM extends Model implements Serializable {
 
 		if (($this->_valid = $array->check()) === false OR $extra_errors)
 		{
-			$exception = new ORM_Validation_Exception($this->errors_filename(), $array);
+			// Which field failed which rule: what the log needs to find the
+			// cause. The values stay out of the message: they may be private.
+			$failed = [];
+
+			foreach ($array->errors() as $field => $error)
+			{
+				$rule = is_array($error) ? ($error[0] ?? '') : $error;
+
+				$failed[] = $field.' ('.(is_scalar($rule) ? $rule : '').')';
+			}
+
+			$exception = new ORM_Validation_Exception($this->errors_filename(), $array, 'Failed to validate :model: :fields', [
+				':model'  => $this->_object_name,
+				':fields' => ($failed === []) ? 'the extra validation' : implode(', ', $failed),
+			]);
 
 			if ($extra_errors)
 			{
@@ -2166,7 +2182,7 @@ class Kohana_ORM extends Model implements Serializable {
 	}
 
 	/**
-	 * @return array<string, array<string, mixed>>
+	 * @return array<string, array<string, mixed>|null>
 	 */
 	public function table_columns(): array
 	{

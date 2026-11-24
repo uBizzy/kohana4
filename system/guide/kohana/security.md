@@ -48,6 +48,7 @@ echo HTML::chars($user['name']);
 
 ## Secrets
 
-- Give `Cookie::$salt` and the encryption keys long random values, different on each installation.
+- Give the cookie salt (`cookie_salt` in `application/config/app.php`) and the encryption keys long random values, different on each installation.
+- Keep secrets in `application/config/` only, and keep that directory out of version control: no key, token, salt or password in the bootstrap or in any other file.
 - Keep them, and database passwords, in config files that are not in version control.
 - The error page and `Debug::vars()` hide values whose name looks secret (`password`, `token`, `salt`, ...). The list is `Debug::$sensitive`; add your own names to it.

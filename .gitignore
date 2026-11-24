@@ -3,6 +3,9 @@
 /.phpunit.cache/
 /.phpunit.result.cache
 
+# The settings of one installation, with its secrets (see system/config/app.php)
+/application/config/
+
 # The extra modules (kohana4-modules) are installed into modules/ and have
 # a repository of their own
 /modules/ub_*/

@@ -167,6 +167,12 @@ class Kohana_ORMDatabaseTest extends Unittest_TestCase
 		catch (ORM_Validation_Exception $e)
 		{
 			$this->assertSame(['name', 'email'], array_keys($e->errors()));
+
+			// The message, for the log: which field failed which rule, and
+			// nothing of what was typed
+			$this->assertStringContainsString('name (not_empty)', $e->getMessage());
+			$this->assertStringContainsString('email (', $e->getMessage());
+			$this->assertStringNotContainsString('not-an-email', $e->getMessage());
 		}
 
 		$this->assertSame(0, ORM::factory('Kohana_ORM_Author')->count_all());

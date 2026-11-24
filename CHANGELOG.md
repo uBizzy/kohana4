@@ -7,6 +7,8 @@
 - **One web server example each**: `public/example.htaccess` for Apache 2.4 (the file for Apache 2.2 is gone) and a new `public/example.nginx.conf`. Both refuse hidden files and directories such as `.git` (the old file only covered hidden files), run no PHP file but `index.php`, compress text, and let the browser keep static files while checking them for changes. Certificate pinning, `X-XSS-Protection` and the Flash header, which browsers no longer read, are gone.
 - The deploy page of the guide has a section on speed: OPcache, the rules of `.htaccess` in the configuration of the site, HTTP/2.
 - **PHP 8.5**: the tests pass on it. Three tests were adjusted (calls PHP 8.5 deprecates, and a new session cookie setting); the framework itself needed no change.
+- **Secrets live in `application/config/` only.** The cookie salt is no longer written in the bootstrap: the new bootstrap reads `cookie_salt` from `application/config/app.php` (a copy of the new `system/config/app.php`), and `application/config/` is ignored by git. Everything else of an application can be committed safely. `Cookie::$salt` works as before; an existing bootstrap that sets it is not changed. The example password in the config of the database module is now empty.
+- **ORM**: a save that fails validation says which field failed which rule in the message of its exception (`Failed to validate user: email (not_empty)`), so the log shows where it failed. The values are not in it. In production the visitor still sees the general error page with its code.
 
 ## 4.0.0 "renatus" (2026-11-15)
 

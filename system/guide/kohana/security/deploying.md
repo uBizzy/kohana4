@@ -45,8 +45,8 @@ Kohana::init([
 	'profile'    => Kohana::$environment !== Kohana::PRODUCTION,   // no profiling
 ]);
 
-// A long random value, only for this site
-Cookie::$salt = 'at-least-32-random-characters';
+// The secret that signs cookies: "cookie_salt" in application/config/app.php
+Cookie::$salt = Kohana::$config->load('app')->get('cookie_salt');
 
 // Once the whole site is on HTTPS
 Cookie::$secure = true;

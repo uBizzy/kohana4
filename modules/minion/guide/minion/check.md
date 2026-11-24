@@ -11,7 +11,7 @@ ok    Extension intl       for the framework
 ok    Extension mbstring   for the framework
 ok    Cache directory      APPPATH/cache
 ok    Logs directory       APPPATH/logs
-fail  Cookie salt          Cookie::$salt is not set in the bootstrap
+fail  Cookie salt          cookie_salt is not set in application/config/app.php
 ok    Extension pdo        for the database
 ok    Database connection  "default" sqlite
 ok    Migrations           all applied

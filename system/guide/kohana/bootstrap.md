@@ -68,7 +68,8 @@ Each module's `init.php` runs here. See [Modules](modules).
 ## 5. Your settings and routes
 
 ```php
-Cookie::$salt = 'a-long-random-text';
+// The secret that signs cookies, from application/config/app.php
+Cookie::$salt = Kohana::$config->load('app')->get('cookie_salt');
 
 // Extra headers on every response (see "Security Headers")
 HTTP::$security_headers['strict-transport-security'] = 'max-age=31536000';

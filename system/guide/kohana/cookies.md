@@ -13,9 +13,13 @@ Cookie::delete('theme');
 Every cookie is signed, so that a visitor cannot change its value. The signature needs a secret text of your own. Without it, setting a cookie throws an exception.
 
 ```php
-// application/bootstrap.php
-Cookie::$salt = 'at-least-32-random-characters';
+// application/config/app.php (a copy of system/config/app.php)
+return [
+	'cookie_salt' => 'at-least-32-random-characters',
+];
 ```
+
+The bootstrap reads it into `Cookie::$salt`. The secret stays out of the bootstrap, and `application/config/` stays out of version control.
 
 ```bash
 # Make one

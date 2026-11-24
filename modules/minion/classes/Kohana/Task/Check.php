@@ -206,7 +206,7 @@ class Kohana_Task_Check extends Minion_Task {
 		$length = strlen( (string) Cookie::$salt);
 
 		match (true) {
-			$length === 0                => $this->_add('fail', 'Cookie salt', 'Cookie::$salt is not set in the bootstrap'),
+			$length === 0                => $this->_add('fail', 'Cookie salt', 'cookie_salt is not set in application/config/app.php'),
 			$length < static::SALT_LENGTH => $this->_add('warn', 'Cookie salt', $length.' characters, use '.static::SALT_LENGTH.' or more'),
 			default                      => $this->_add('ok', 'Cookie salt', $length.' characters'),
 		};
